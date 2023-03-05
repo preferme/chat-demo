@@ -19,11 +19,11 @@ PackageBody::~PackageBody() {
 
 }
 
-std::ostream& operator<<(std::ostream& os, const PackageBody& body) {
+std::wostream& operator<<(std::wostream& os, const PackageBody& body) {
 	return os << "{}";
 }
 
-std::ostream& operator<<(std::ostream& os, const std::unique_ptr<PackageBody>& body) {
+std::wostream& operator<<(std::wostream& os, const std::unique_ptr<PackageBody>& body) {
 	return os << *body;
 }
 

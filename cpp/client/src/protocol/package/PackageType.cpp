@@ -5,6 +5,9 @@
  *      Author: hou-lei
  */
 #include "protocol/package/PackageType.h"
+#include "protocol/codec/StringConverter.h"
+#include <sstream>
+
 
 namespace chat {
 namespace protocol {
@@ -37,6 +40,13 @@ std::istream& operator>>(std::istream& is, PackageType& type) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PackageType& type) {
+	std::wstringstream wss;
+	wss << type;
+	os << chat::protocol::codec::to_string(wss.str());
+	return os;
+}
+
+std::wostream& operator<<(std::wostream& os, const PackageType& type) {
 	switch(type){
 		case PackageType::HeartBeatRequest:
 			os << "HeartBeatRequest"; break;

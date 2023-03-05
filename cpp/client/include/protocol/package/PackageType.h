@@ -35,6 +35,7 @@ typedef enum PackageType {
 PackageType parsePackageType(int value);
 std::istream& operator>>(std::istream& is, PackageType& type);
 std::ostream& operator<<(std::ostream& os, const PackageType& type);
+std::wostream& operator<<(std::wostream& os, const PackageType& type);
 
 } /* namespace package */
 } /* namespace protocol */

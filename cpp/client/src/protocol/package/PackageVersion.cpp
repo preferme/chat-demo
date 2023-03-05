@@ -5,7 +5,8 @@
  *      Author: hou-lei
  */
 #include "protocol/package/PackageVersion.h"
-
+#include "protocol/codec/StringConverter.h"
+#include <sstream>
 
 namespace chat {
 namespace protocol {
@@ -29,6 +30,12 @@ std::istream& operator>>(std::istream& is, PackageVersion& version) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PackageVersion& version) {
+	std::wstringstream wss;
+	wss << version;
+	os << chat::protocol::codec::to_string(wss.str());
+	return os;
+}
+std::wostream& operator<<(std::wostream& os, const PackageVersion& version) {
 	switch(version) {
 	case PackageVersion::V01 :
 		os << "V01"; break;

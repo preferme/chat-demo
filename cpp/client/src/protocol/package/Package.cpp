@@ -34,14 +34,14 @@ Package& Package::operator=(Package &&other) {
 	return *this;
 }
 
-std::ostream& operator<<(std::ostream& os, const Package& package) {
+std::wostream& operator<<(std::wostream& os, const Package& package) {
 	os << "{header: " << package.getHeader();
 	os << ", body: " << package.getBody();
 	os << '}';
 	return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::unique_ptr<Package>& package) {
+std::wostream& operator<<(std::wostream& os, const std::unique_ptr<Package>& package) {
 	return os << *package;
 }
 

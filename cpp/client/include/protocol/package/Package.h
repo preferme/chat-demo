@@ -25,8 +25,8 @@ public:
 	Package(Package &&other);
 	Package& operator=(Package &&other);
 
-	friend std::ostream& operator<<(std::ostream& os, const Package& package);
-	friend std::ostream& operator<<(std::ostream& os, const std::unique_ptr<Package>& package);
+	friend std::wostream& operator<<(std::wostream& os, const Package& package);
+	friend std::wostream& operator<<(std::wostream& os, const std::unique_ptr<Package>& package);
 
 	const std::unique_ptr<PackageBody>& getBody() const;
 	const std::unique_ptr<PackageHeader>& getHeader() const;

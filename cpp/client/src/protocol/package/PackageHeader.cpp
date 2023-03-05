@@ -22,7 +22,7 @@ PackageHeader::PackageHeader(PackageVersion version, int sequence, PackageType t
 
 }
 
-std::ostream& operator<<(std::ostream& os, const PackageHeader& header) {
+std::wostream& operator<<(std::wostream& os, const PackageHeader& header) {
 	os << '{'  << "version: " << header.getVersion();
 	os << ", " << "sequence: " << header.getSequence();
 	os << ", " << "type: " << header.getType();
@@ -31,7 +31,7 @@ std::ostream& operator<<(std::ostream& os, const PackageHeader& header) {
 	return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::unique_ptr<PackageHeader>& header) {
+std::wostream& operator<<(std::wostream& os, const std::unique_ptr<PackageHeader>& header) {
 	return os << *header;
 }
 

@@ -27,8 +27,8 @@ public:
 	PackageHeader();
 	PackageHeader(PackageVersion version, int sequence, PackageType type, int length);
 
-	friend std::ostream& operator<<(std::ostream& os, const PackageHeader& header);
-	friend std::ostream& operator<<(std::ostream& os, const std::unique_ptr<PackageHeader>& header);
+	friend std::wostream& operator<<(std::wostream& os, const PackageHeader& header);
+	friend std::wostream& operator<<(std::wostream& os, const std::unique_ptr<PackageHeader>& header);
 
 	int getLength() const;
 	PackageHeader& setLength(int length);

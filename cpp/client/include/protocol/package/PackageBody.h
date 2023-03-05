@@ -8,7 +8,7 @@
 #ifndef __PROTOCOL_PACKAGE_PACKAGEBODY_H_
 #define __PROTOCOL_PACKAGE_PACKAGEBODY_H_
 
-#include<iostream>
+#include <iostream>
 #include <memory>
 
 namespace chat {
@@ -19,8 +19,8 @@ class PackageBody {
 public:
 	PackageBody();
 	virtual ~PackageBody();
-	friend std::ostream& operator<<(std::ostream& os, const PackageBody& body);
-	friend std::ostream& operator<<(std::ostream& os, const std::unique_ptr<PackageBody>& body);
+	friend std::wostream& operator<<(std::wostream& os, const PackageBody& body);
+	friend std::wostream& operator<<(std::wostream& os, const std::unique_ptr<PackageBody>& body);
 };
 
 

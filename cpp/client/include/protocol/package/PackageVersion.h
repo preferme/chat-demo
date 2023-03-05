@@ -26,6 +26,7 @@ typedef enum PackageVersion {
 PackageVersion parsePackageVersion(int value);
 std::istream& operator>>(std::istream& is, PackageVersion& version);
 std::ostream& operator<<(std::ostream& os, const PackageVersion& version);
+std::wostream& operator<<(std::wostream& os, const PackageVersion& version);
 
 } /* namespace package */
 } /* namespace protocol */
