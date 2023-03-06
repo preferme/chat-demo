@@ -42,7 +42,7 @@ Exception& Exception::setFunName(::std::string funName) {
     return *this;
 }
 
-std::string& Exception::getFunName() {
+::std::string& Exception::getFunName() {
     return this->funName;
 }
 
