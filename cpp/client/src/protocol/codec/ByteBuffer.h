@@ -14,12 +14,13 @@ public:
     ByteBuffer(const int capacity);
     virtual ~ByteBuffer();
 
-    char* array();
-    int capacity();
-    void capacity(int capacity);
-    void clear();
+
+//    char* array();
+//    int capacity();
+//    void capacity(int capacity);
+//    void clear();
     // compare copy copy(index,length)
-    ByteBuffer& ensureWritable(int minWritableBytes);
+//    ByteBuffer& ensureWritable(int minWritableBytes);
 
 private:
     char* value;
