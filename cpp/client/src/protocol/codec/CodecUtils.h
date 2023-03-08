@@ -25,6 +25,14 @@ public:
     static long getLong(const byte* memory, const int index);
     static long getLongBE(const byte* memory, const int index);
     static long getLongLE(const byte* memory, const int index);
+    static bool getBool(const byte* memory, const int index);
+    static float getFloat(const byte* memory, const int index);
+    static float getFloatBE(const byte* memory, const int index);
+    static float getFloatLE(const byte* memory, const int index);
+    static double getDouble(const byte* memory, const int index);
+    static double getDoubleBE(const byte* memory, const int index);
+    static double getDoubleLE(const byte* memory, const int index);
+
     static void setByte(byte* const memory, const int index, const int value);
     static void setShort(byte* const memory, const int index, const int value);
     static void setShortBE(byte* const memory, const int index, const int value);
@@ -38,6 +46,13 @@ public:
     static void setLong(byte* const memory, const int index, const long value);
     static void setLongBE(byte* const memory, const int index, const long value);
     static void setLongLE(byte* const memory, const int index, const long value);
+    static void setBool(byte* const memory, const int index, const bool value);
+    static void setFloat(byte* const memory, const int index, const float value);
+    static void setFloatBE(byte* const memory, const int index, const float value);
+    static void setFloatLE(byte* const memory, const int index, const float value);
+    static void setDouble(byte* const memory, const int index, const double value);
+    static void setDoubleBE(byte* const memory, const int index, const double value);
+    static void setDoubleLE(byte* const memory, const int index, const double value);
 
     static std::string getString(const byte* memory, const int index);
     static void setString(byte* const memory, const int index, const std::string& value);

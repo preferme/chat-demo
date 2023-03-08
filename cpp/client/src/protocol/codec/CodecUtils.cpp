@@ -91,12 +91,40 @@ long CodecUtils::getLongLE(const byte* memory, const int index){
             ((long) memory[index + 7] & 0xff) << 56;
 }
 
+bool CodecUtils::getBool(const byte* memory, const int index) {
+    return memory[index] != 0;
+}
+
+float CodecUtils::getFloat(const byte* memory, const int index) {
+    return isBigEndian ? getFloatBE(memory, index) : getFloatLE(memory, index);
+}
+float CodecUtils::getFloatBE(const byte* memory, const int index) {
+    int value = getIntBE(memory, index);
+    return *((float *) &value);
+}
+float CodecUtils::getFloatLE(const byte* memory, const int index) {
+    int value = getIntLE(memory, index);
+    return *((float *) &value);
+}
+
+double CodecUtils::getDouble(const byte* memory, const int index) {
+    return isBigEndian ? getDoubleBE(memory, index) : getDoubleLE(memory, index);
+}
+double CodecUtils::getDoubleBE(const byte* memory, const int index) {
+    long value = getLongBE(memory, index);
+    return *((double *)&value);
+}
+double CodecUtils::getDoubleLE(const byte* memory, const int index) {
+    long value = getLongLE(memory, index);
+    return *((double *)&value);
+}
+
 void CodecUtils::setByte(byte* const memory, const int index, int value){
     memory[index] = (byte) value;
 }
 
 void CodecUtils::setShort(byte* const memory, const int index, int value){
-    return isBigEndian ? setShortBE(memory, index, value) : setShortLE(memory, index, value);
+    isBigEndian ? setShortBE(memory, index, value) : setShortLE(memory, index, value);
 }
 void CodecUtils::setShortBE(byte* const memory, const int index, int value){
     memory[index]     = (byte) ((unsigned short)value >> 8);
@@ -108,7 +136,7 @@ void CodecUtils::setShortLE(byte* const memory, const int index, int value){
 }
 
 void CodecUtils::setMedium(byte* const memory, const int index, int value){
-    return isBigEndian ? setMediumBE(memory, index, value) : setMediumLE(memory, index, value);
+    isBigEndian ? setMediumBE(memory, index, value) : setMediumLE(memory, index, value);
 }
 void CodecUtils::setMediumBE(byte* const memory, const int index, int value){
     memory[index]     = (byte) ((unsigned int)value >> 16);
@@ -122,7 +150,7 @@ void CodecUtils::setMediumLE(byte* const memory, const int index, int value){
 }
 
 void CodecUtils::setInt(byte* const memory, const int index, int value){
-    return isBigEndian ? setIntBE(memory, index, value) : setIntLE(memory, index, value);
+    isBigEndian ? setIntBE(memory, index, value) : setIntLE(memory, index, value);
 }
 void CodecUtils::setIntBE(byte* const memory, const int index, int value){
     memory[index]     = (byte) ((unsigned int)value >> 24);
@@ -138,7 +166,7 @@ void CodecUtils::setIntLE(byte* const memory, const int index, int value){
 }
 
 void CodecUtils::setLong(byte* const memory, const int index, const long value){
-    return isBigEndian ? setLongBE(memory, index, value) : setLongLE(memory, index, value);
+    isBigEndian ? setLongBE(memory, index, value) : setLongLE(memory, index, value);
 }
 void CodecUtils::setLongBE(byte* const memory, const int index, const long value){
     memory[index]     = (byte) ((unsigned long)value >> 56);
@@ -159,6 +187,30 @@ void CodecUtils::setLongLE(byte* const memory, const int index, const long value
     memory[index + 5] = (byte) ((unsigned long)value >> 40);
     memory[index + 6] = (byte) ((unsigned long)value >> 48);
     memory[index + 7] = (byte) ((unsigned long)value >> 56);
+}
+
+void CodecUtils::setBool(byte* const memory, const int index, const bool value) {
+    setByte(memory, index, value?1:0);
+}
+
+void CodecUtils::setFloat(byte* const memory, const int index, const float value) {
+    isBigEndian ? setFloatBE(memory, index, value) : setFloatLE(memory, index, value);
+}
+void CodecUtils::setFloatBE(byte* const memory, const int index, const float value) {
+    setIntBE(memory, index, *((int*)&value));
+}
+void CodecUtils::setFloatLE(byte* const memory, const int index, const float value) {
+    setIntLE(memory, index, *((int*)&value));
+}
+
+void CodecUtils::setDouble(byte* const memory, const int index, const double value) {
+    isBigEndian? setDoubleBE(memory, index, value) : setDoubleLE(memory, index, value);
+}
+void CodecUtils::setDoubleBE(byte* const memory, const int index, const double value) {
+    setLongBE(memory, index, *((long *)&value));
+}
+void CodecUtils::setDoubleLE(byte* const memory, const int index, const double value) {
+    setLongLE(memory, index, *((long *)&value));
 }
 
 std::string CodecUtils::getString(const byte* memory, const int index) {
