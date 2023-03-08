@@ -11,23 +11,23 @@ namespace chat {
 namespace protocol {
 namespace package {
 
-LoginResponse::LoginResponse():ResponseBody() {
+LoginResponse::LoginResponse(): ChatResponse() {
 
 }
 
 LoginResponse::LoginResponse(int errorCode, std::wstring message)
-		:ResponseBody(errorCode, message) {
+		: ChatResponse(errorCode, message) {
 
 }
 
 LoginResponse::LoginResponse(ChatUser user)
-		:ResponseBody(), user(user){
+		: ChatResponse(), user(user){
 
 }
 
 std::wostream& operator<<(std::wostream& os, const LoginResponse& response) {
 	if(response.errorCode) {
-		os << (ResponseBody)response;
+		os << (ChatResponse)response;
 	} else {
 		os << "{user: " << response.user << "}";
 	}

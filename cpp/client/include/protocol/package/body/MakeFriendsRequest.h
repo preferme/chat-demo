@@ -8,7 +8,7 @@
 #ifndef __PROTOCOL_PACKAGE_BODY_MAKEFRIENDSREQUEST_H_
 #define __PROTOCOL_PACKAGE_BODY_MAKEFRIENDSREQUEST_H_
 
-#include <protocol/package/PackageBody.h>
+#include <protocol/package/ChatRequest.h>
 #include <protocol/package/body/ChatUser.h>
 #include <iostream>
 #include <memory>
@@ -17,7 +17,7 @@ namespace chat {
 namespace protocol {
 namespace package {
 
-class MakeFriendsRequest final : public PackageBody {
+class MakeFriendsRequest final : public ChatRequest {
 public:
 	MakeFriendsRequest();
 	MakeFriendsRequest(ChatUser friends);

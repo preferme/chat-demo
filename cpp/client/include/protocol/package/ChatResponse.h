@@ -1,12 +1,12 @@
 /*
- * ResponseBody.h
+ * ChatResponse.h
  *
  *  Created on: 2023年3月5日
  *      Author: hou-lei
  */
 
-#ifndef __PROTOCOL_PACKAGE_RESPONSEBODY_H_
-#define __PROTOCOL_PACKAGE_RESPONSEBODY_H_
+#ifndef __PROTOCOL_PACKAGE_CHATRESPONSE_H_
+#define __PROTOCOL_PACKAGE_CHATRESPONSE_H_
 
 #include <protocol/package/PackageBody.h>
 #include <string>
@@ -15,14 +15,14 @@ namespace chat {
 namespace protocol {
 namespace package {
 
-class ResponseBody : public PackageBody {
+class ChatResponse : public PackageBody {
 public:
-	ResponseBody();
-	ResponseBody(int errorCode, std::wstring message);
-	virtual ~ResponseBody();
+	ChatResponse();
+	ChatResponse(int errorCode, std::wstring message);
+	virtual ~ChatResponse();
 
-	friend std::wostream& operator<<(std::wostream& os, const ResponseBody& body);
-	friend std::wostream& operator<<(std::wostream& os, const std::unique_ptr<ResponseBody>& body);
+	friend std::wostream& operator<<(std::wostream& os, const ChatResponse& body);
+	friend std::wostream& operator<<(std::wostream& os, const std::unique_ptr<ChatResponse>& body);
 
 	int getErrorCode() const;
 	void setErrorCode(int errorCode);
@@ -38,4 +38,4 @@ protected:
 } /* namespace protocol */
 } /* namespace chat */
 
-#endif /* __PROTOCOL_PACKAGE_RESPONSEBODY_H_ */
+#endif /* __PROTOCOL_PACKAGE_CHATRESPONSE_H_ */

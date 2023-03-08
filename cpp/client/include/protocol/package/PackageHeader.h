@@ -1,8 +1,8 @@
 /*
  * PackageHeader.h
  *
- *  | B/L Endian | Version | Sequence | MessageType | GroupIndex | GroupSize | BodyLength |
- *  | 2 Bytes    | 2 Bytes | 4 Bytes  | 4 Bytes     | 3 Bytes    | 3 Bytes   | 2 Bytes    |
+ *  | B/L Endian | Version | Sequence | PackageType | BodyLength |
+ *  | 2 Bytes    | 2 Bytes | 4 Bytes  | 4 Bytes     | 4 Bytes    |
  *
  *  Created on: 2023年3月5日
  *      Author: hou-lei

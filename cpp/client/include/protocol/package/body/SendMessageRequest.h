@@ -8,7 +8,7 @@
 #ifndef __PROTOCOL_PACKAGE_BODY_SENDMESSAGEREQUEST_H_
 #define __PROTOCOL_PACKAGE_BODY_SENDMESSAGEREQUEST_H_
 
-#include <protocol/package/PackageBody.h>
+#include <protocol/package/ChatRequest.h>
 #include <protocol/package/body/ChatUser.h>
 #include <string>
 #include <iostream>
@@ -18,7 +18,7 @@ namespace chat {
 namespace protocol {
 namespace package {
 
-class SendMessageRequest final : public PackageBody {
+class SendMessageRequest final : public ChatRequest {
 public:
 	SendMessageRequest();
 	SendMessageRequest(ChatUser user, std::wstring message);

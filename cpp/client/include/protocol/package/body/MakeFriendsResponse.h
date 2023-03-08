@@ -8,7 +8,7 @@
 #ifndef __PROTOCOL_PACKAGE_BODY_MAKEFRIENDSRESPONSE_H_
 #define __PROTOCOL_PACKAGE_BODY_MAKEFRIENDSRESPONSE_H_
 
-#include <protocol/package/ResponseBody.h>
+#include <protocol/package/ChatResponse.h>
 #include <protocol/package/body/ChatUser.h>
 #include <iostream>
 #include <memory>
@@ -17,7 +17,7 @@ namespace chat {
 namespace protocol {
 namespace package {
 
-class MakeFriendsResponse final : public ResponseBody {
+class MakeFriendsResponse final : public ChatResponse {
 public:
 	MakeFriendsResponse();
 	MakeFriendsResponse(int errorCode, std::wstring message);

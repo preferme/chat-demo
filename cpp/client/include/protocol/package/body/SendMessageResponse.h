@@ -8,7 +8,7 @@
 #ifndef __PROTOCOL_PACKAGE_BODY_SENDMESSAGERESPONSE_H_
 #define __PROTOCOL_PACKAGE_BODY_SENDMESSAGERESPONSE_H_
 
-#include <protocol/package/ResponseBody.h>
+#include <protocol/package/ChatResponse.h>
 #include <iostream>
 #include <memory>
 
@@ -16,7 +16,7 @@ namespace chat {
 namespace protocol {
 namespace package {
 
-class SendMessageResponse final : public ResponseBody {
+class SendMessageResponse final : public ChatResponse {
 public:
 	SendMessageResponse();
 	SendMessageResponse(int errorCode, std::wstring message);

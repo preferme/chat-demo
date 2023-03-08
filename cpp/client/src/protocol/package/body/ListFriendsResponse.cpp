@@ -12,23 +12,23 @@ namespace protocol {
 namespace package {
 
 ListFriendsResponse::ListFriendsResponse()
-		:ResponseBody(), totalCount(0), listSize(0) {
+		: ChatResponse(), totalCount(0), listSize(0) {
 
 }
 
 ListFriendsResponse::ListFriendsResponse(int errorCode, std::wstring message)
-		:ResponseBody(errorCode, message), totalCount(0), listSize(0) {
+		: ChatResponse(errorCode, message), totalCount(0), listSize(0) {
 
 }
 
 ListFriendsResponse::ListFriendsResponse(int totalCount, int listSize, std::vector<ChatUser> friends)
-		:ResponseBody(), totalCount(totalCount), listSize(listSize), friends(friends) {
+		: ChatResponse(), totalCount(totalCount), listSize(listSize), friends(friends) {
 
 }
 
 std::wostream& operator<<(std::wostream& os, const ListFriendsResponse& response) {
 	if(response.getErrorCode()) {
-		os << (ResponseBody)response;
+		os << (ChatResponse)response;
 	} else {
 		os << "{totalCount: " << response.getTotalCount();
 		os << ", listSize: " << response.getListSize();

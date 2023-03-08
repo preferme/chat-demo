@@ -8,7 +8,7 @@
 #ifndef __PROTOCOL_PACKAGE_BODY_LISTFRIENDSRESPONSE_H_
 #define __PROTOCOL_PACKAGE_BODY_LISTFRIENDSRESPONSE_H_
 
-#include <protocol/package/ResponseBody.h>
+#include <protocol/package/ChatResponse.h>
 #include <protocol/package/body/ChatUser.h>
 #include <vector>
 #include <iostream>
@@ -18,7 +18,7 @@ namespace chat {
 namespace protocol {
 namespace package {
 
-class ListFriendsResponse final : public ResponseBody {
+class ListFriendsResponse final : public ChatResponse {
 public:
 	ListFriendsResponse();
 	ListFriendsResponse(int errorCode, std::wstring message);
