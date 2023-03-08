@@ -57,7 +57,7 @@ public:
     static std::string getString(const byte* memory, const int index);
     static void setString(byte* const memory, const int index, const std::string& value);
     static std::wstring getWString(const byte* memory, const int index);
-    static void setWString(byte* const memory, const int index, const std::wstring& value);
+    static int setWString(byte* const memory, const int index, const std::wstring& value);
 
 private:
     static bool isBigEndian;

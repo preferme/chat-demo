@@ -219,13 +219,15 @@ std::string CodecUtils::getString(const byte* memory, const int index) {
 }
 void CodecUtils::setString(byte* const memory, const int index, const std::string& value) {
     for (int i = 0; i < value.length(); ++i) {
-        memory[i] = value[i];
+        memory[index + i] = value[i];
     }
 }
 
 std::wstring CodecUtils::getWString(const byte* memory, const int index){
     return ::chat::protocol::codec::to_wstring(getString(memory, index));
 }
-void CodecUtils::setWString(byte* const memory, const int index, const std::wstring& value){
-    setString(memory, index, ::chat::protocol::codec::to_string(value));
+int CodecUtils::setWString(byte* const memory, const int index, const std::wstring& value){
+    std::string utf8 = ::chat::protocol::codec::to_string(value);
+    setString(memory, index, utf8);
+    return utf8.length();
 }
