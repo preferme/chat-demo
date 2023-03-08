@@ -20,7 +20,7 @@ public:
 	PackageBody();
 	virtual ~PackageBody();
 	friend std::wostream& operator<<(std::wostream& os, const PackageBody& body);
-	friend std::wostream& operator<<(std::wostream& os, const std::unique_ptr<PackageBody>& body);
+	friend std::wostream& operator<<(std::wostream& os, const std::shared_ptr<PackageBody>& body);
 };
 
 

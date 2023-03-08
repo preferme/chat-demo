@@ -17,19 +17,20 @@ namespace protocol {
 namespace package {
 
 class Package final {
-private:
-	std::unique_ptr<PackageHeader> header;
-	std::unique_ptr<PackageBody> body;
 public:
-	Package(std::unique_ptr<PackageHeader> &header, std::unique_ptr<PackageBody> &body);
+	Package(std::shared_ptr<PackageHeader> &header, std::shared_ptr<PackageBody> &body);
 	Package(Package &&other);
 	Package& operator=(Package &&other);
 
 	friend std::wostream& operator<<(std::wostream& os, const Package& package);
-	friend std::wostream& operator<<(std::wostream& os, const std::unique_ptr<Package>& package);
+	friend std::wostream& operator<<(std::wostream& os, const std::shared_ptr<Package>& package);
 
-	const std::unique_ptr<PackageBody>& getBody() const;
-	const std::unique_ptr<PackageHeader>& getHeader() const;
+	const std::shared_ptr<PackageBody>& getBody() const;
+	const std::shared_ptr<PackageHeader>& getHeader() const;
+
+private:
+    std::shared_ptr<PackageHeader> header;
+    std::shared_ptr<PackageBody> body;
 };
 
 } /* namespace package */

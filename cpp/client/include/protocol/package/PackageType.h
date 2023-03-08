@@ -14,7 +14,9 @@ namespace chat {
 namespace protocol {
 namespace package {
 
-
+/**
+ * enum name must be same as class(ChatRequest/ChatResponse) name
+ */
 typedef enum PackageType {
 	HeartBeatRequest	= (int)0x00000001,
 	HeartBeatResponse	= (int)0x80000001,

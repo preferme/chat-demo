@@ -23,7 +23,7 @@ std::wostream& operator<<(std::wostream& os, const PackageBody& body) {
 	return os << "{}";
 }
 
-std::wostream& operator<<(std::wostream& os, const std::unique_ptr<PackageBody>& body) {
+std::wostream& operator<<(std::wostream& os, const std::shared_ptr<PackageBody>& body) {
 	return os << *body;
 }
 

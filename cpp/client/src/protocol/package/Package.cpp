@@ -12,7 +12,7 @@ namespace protocol {
 namespace package {
 
 
-Package::Package(std::unique_ptr<PackageHeader> &header, std::unique_ptr<PackageBody> &body)
+Package::Package(std::shared_ptr<PackageHeader> &header, std::shared_ptr<PackageBody> &body)
 		:header(std::move(header)), body(std::move(body)) {
 
 }
@@ -41,15 +41,15 @@ std::wostream& operator<<(std::wostream& os, const Package& package) {
 	return os;
 }
 
-std::wostream& operator<<(std::wostream& os, const std::unique_ptr<Package>& package) {
+std::wostream& operator<<(std::wostream& os, const std::shared_ptr<Package>& package) {
 	return os << *package;
 }
 
-const std::unique_ptr<PackageBody>& Package::getBody() const {
+const std::shared_ptr<PackageBody>& Package::getBody() const {
 	return body;
 }
 
-const std::unique_ptr<PackageHeader>& Package::getHeader() const {
+const std::shared_ptr<PackageHeader>& Package::getHeader() const {
 	return header;
 }
 
