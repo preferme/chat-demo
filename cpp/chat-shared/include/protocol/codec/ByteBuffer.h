@@ -9,6 +9,12 @@
 #include <memory>
 #include <ostream>
 
+
+namespace chat {
+namespace protocol {
+namespace codec {
+
+
 class ByteBuffer final {
 public:
     ByteBuffer(const int capacity);
@@ -173,5 +179,8 @@ private:
     friend int firstIndexOf(ByteBuffer* buffer, int fromIndex, int toIndex, char value);
 };
 
+} /* namespace codec */
+} /* namespace protocol */
+} /* namespace chat */
 
 #endif //__PROTOCOL_CODEC_BYTEBUFFER_H_

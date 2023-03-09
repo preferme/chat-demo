@@ -8,6 +8,12 @@
 #include <exception>
 #include <string>
 
+
+namespace chat {
+namespace protocol {
+namespace codec {
+
+
 typedef char byte;
 
 class CodecUtils final {
@@ -64,5 +70,8 @@ private:
     CodecUtils(){}
 };
 
+} /* namespace codec */
+} /* namespace protocol */
+} /* namespace chat */
 
 #endif //CPP_CODECUTILS_H

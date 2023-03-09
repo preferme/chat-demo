@@ -9,6 +9,11 @@
 #include "protocol/codec/StringConverter.h"
 #include <iostream>
 
+namespace chat {
+namespace protocol {
+namespace codec {
+
+
 static bool nativeEndianIsBigOrLittle() {
     union {short value; char array[2];} data;
     data.value = 0x4321;
@@ -234,3 +239,8 @@ int CodecUtils::setWString(byte* const memory, const int index, const std::wstri
     setString(memory, index, utf8);
     return utf8.length();
 }
+
+
+} /* namespace codec */
+} /* namespace protocol */
+} /* namespace chat */

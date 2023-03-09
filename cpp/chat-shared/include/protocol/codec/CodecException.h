@@ -12,6 +12,7 @@ namespace chat {
 namespace protocol {
 namespace codec {
 
+
 class CodecException : public exception::Exception {
 public:
     explicit CodecException(const std::string& message);

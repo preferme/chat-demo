@@ -20,8 +20,14 @@
 // 4 MiB page
 #define CALCULATE_THRESHOLD (1048576 * 4)
 
-#define isOutOfBounds(index, length, capacity) \
-(((index) | (length) | (capacity) | ((index) + (length)) | ((capacity) - ((index) + (length)))) < 0)
+
+namespace chat {
+namespace protocol {
+namespace codec {
+
+inline bool isOutOfBounds(int index, int length, int capacity) {
+    return (((index) | (length) | (capacity) | ((index) + (length)) | ((capacity) - ((index) + (length)))) < 0);
+}
 
 static int checkPositiveOrZero(const int i, std::string name) {
     if (i < INT_ZERO) {
@@ -905,3 +911,7 @@ ByteBuffer& ByteBuffer::operator>>(std::wstring& value) {
     value = this->readWstring();
     return *this;
 }
+
+} /* namespace codec */
+} /* namespace protocol */
+} /* namespace chat */
