@@ -16,10 +16,7 @@ using namespace std;
 
 
 int main() {
-    byte memory[100]{0x34, 0x12};
-    short value = 0x1234;
-    int b = CodecUtils::getShort(memory, 0);
-    cout << "memory " << b << "  value " << value <<endl;
+
 
 
     cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
