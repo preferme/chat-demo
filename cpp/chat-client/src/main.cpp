@@ -27,6 +27,7 @@ void onInterrupt(int value) {
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <poll.h>
+#include <string.h>
 
 class PollerErrorHandler : public ErrorHandler {
 public:

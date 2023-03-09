@@ -11,6 +11,8 @@
 #include <sstream>
 #include <algorithm>
 #include <cstdio>
+#include <assert.h>
+#include <cstring>
 
 #define INT_ZERO (0)
 #define LONG_ZERO (0L)

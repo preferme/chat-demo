@@ -30,6 +30,7 @@ private:
     PollEventsHandler onPollWrnorm;
     PollEventsHandler onPollRdband;
     PollEventsHandler onPollWrban;
+#if defined(POLLEXTEND)
     /*
      * FreeBSD extensions: polling on a regular file might return one
      * of these events (currently only supported on local filesystems).
@@ -42,6 +43,7 @@ private:
     PollEventsHandler onPollAttrib;
     PollEventsHandler onPollNlink;
     PollEventsHandler onPollWrite;
+#endif
     /*
      * These events are set if they occur regardless of whether they were
      * requested.

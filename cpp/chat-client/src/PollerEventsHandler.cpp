@@ -8,8 +8,11 @@
 PollerEventsHandler::PollerEventsHandler(const int fd)
         : fd(fd), events(0),
           onPollIn(nullptr), onPollPri(nullptr), onPollOut(nullptr), onPollRdnorm(nullptr), onPollWrnorm(nullptr),
-          onPollRdband(nullptr), onPollWrban(nullptr), onPollExtend(nullptr), onPollAttrib(nullptr), onPollNlink(nullptr),
-          onPollWrite(nullptr), onPollErr(nullptr), onPollHup(nullptr), onPollNval(nullptr) {
+          onPollRdband(nullptr), onPollWrban(nullptr),
+#if defined(POLLEXTEND)
+          onPollExtend(nullptr), onPollAttrib(nullptr), onPollNlink(nullptr), onPollWrite(nullptr),
+#endif
+          onPollErr(nullptr), onPollHup(nullptr), onPollNval(nullptr) {
 
 }
 
@@ -37,6 +40,7 @@ void PollerEventsHandler::registEventsHandler(const short events, const PollEven
     if (events & POLLWRBAND) {
         this->onPollWrban = eventsHandler;
     }
+#if defined(POLLEXTEND)
     if (events & POLLEXTEND) {
         this->onPollExtend = eventsHandler;
     }
@@ -49,6 +53,7 @@ void PollerEventsHandler::registEventsHandler(const short events, const PollEven
     if (events & POLLWRITE) {
         this->onPollWrite = eventsHandler;
     }
+#endif
     if (events & POLLERR) {
         this->onPollErr = eventsHandler;
     }
@@ -82,6 +87,7 @@ void PollerEventsHandler::executeEventsHandler(const int fd, const short events,
     if (this->onPollWrban && (revents & POLLWRBAND)) {
         this->onPollWrban(fd, events, revents);
     }
+#if defined(POLLEXTEND)
     if (this->onPollExtend && (revents & POLLEXTEND)) {
         this->onPollExtend(fd, events, revents);
     }
@@ -94,6 +100,7 @@ void PollerEventsHandler::executeEventsHandler(const int fd, const short events,
     if (this->onPollWrite && (revents & POLLWRITE)) {
         this->onPollWrite(fd, events, revents);
     }
+#endif
     if (this->onPollErr && (revents & POLLERR)) {
         this->onPollErr(fd, events, revents);
     }

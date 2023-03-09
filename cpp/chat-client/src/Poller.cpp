@@ -5,6 +5,7 @@
 #include "Poller.h"
 #include <poll.h>
 #include <errno.h>
+#include <string.h>
 #include <iostream>
 
 extern int errno;
