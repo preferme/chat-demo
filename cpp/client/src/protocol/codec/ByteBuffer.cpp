@@ -58,11 +58,11 @@ static int numberOfLeadingZeros(int i) {
     if (i <= 0)
         return i == 0 ? 32 : 0;
     int n = 31;
-    if (i >= 1 << 16) { n -= 16; i >>>= 16; }
-    if (i >= 1 <<  8) { n -=  8; i >>>=  8; }
-    if (i >= 1 <<  4) { n -=  4; i >>>=  4; }
-    if (i >= 1 <<  2) { n -=  2; i >>>=  2; }
-    return n - (i >>> 1);
+    if (i >= 1 << 16) { n -= 16; i = ((unsigned int)i) >> 16; }
+    if (i >= 1 <<  8) { n -=  8; i = ((unsigned int)i) >>  8; }
+    if (i >= 1 <<  4) { n -=  4; i = ((unsigned int)i) >>  4; }
+    if (i >= 1 <<  2) { n -=  2; i = ((unsigned int)i) >>  2; }
+    return n - (((unsigned int)i) >> 1);
 }
 static int findNextPositivePowerOfTwo(const int value) {
     assert(value > 0x80000000 && value < 0x40000000);
@@ -98,13 +98,45 @@ static int calculateNewCapacity(int minNewCapacity, int maxCapacity) {
     const int newCapacity = findNextPositivePowerOfTwo(std::max(minNewCapacity, 64));
     return std::min(newCapacity, maxCapacity);
 }
+int firstIndexOf(ByteBuffer* buffer, int fromIndex, int toIndex, char value) {
+    fromIndex = std::max(fromIndex, 0);
+    if (fromIndex >= toIndex || buffer->capacity() == 0) {
+        return -1;
+    }
+    const int length = toIndex - fromIndex;
+    buffer->checkIndex(fromIndex, length);
+    // if (!PlatformDependent.isUnaligned()) { ... }
+    for (int i = fromIndex; i < toIndex; i++) {
+        if (CodecUtils::getByte(buffer->memory, i) == value) {
+            return i;
+        }
+    }
+    // else { ... }
+    return -1;
+}
+int lastIndexOf(ByteBuffer* buffer, int fromIndex, int toIndex, char value) {
+    assert(fromIndex > toIndex);
+    const int capacity = buffer->capacity();
+    fromIndex = std::min(fromIndex, capacity);
+    if (fromIndex < 0 || capacity == 0) {
+        return -1;
+    }
+    buffer->checkIndex(toIndex, fromIndex - toIndex);
+    for (int i = fromIndex - 1; i >= toIndex; i--) {
+        if (CodecUtils::getByte(buffer->memory, i) == value) {
+            return i;
+        }
+    }
+
+    return -1;
+}
 
 
 bool ByteBuffer::checkAccessible = true;
 bool ByteBuffer::checkBounds = true;
 
 ByteBuffer::ByteBuffer(const int capacity)
-        : maxCapacity(capacity), memory(allocateArray(capacity)), _readIndex(0), _writeIndex(0), markedReaderIndex(0), markedWriterIndex(0) {
+        : maxCapacity(capacity), memory(allocateArray(capacity)), _readerIndex(0), _writerIndex(0), markedReaderIndex(0), markedWriterIndex(0) {
 
 }
 
@@ -176,7 +208,7 @@ void ByteBuffer::checkDstIndex(int index, int length, int dstIndex, int dstCapac
 
 // --- private methods --- //
 void ByteBuffer::ensureWritable0(int minWritableBytes) {
-    const int writerIndex = writerIndex();
+    const int writerIndex = this->writerIndex();
     const int targetCapacity = writerIndex + minWritableBytes;
     // using non-short-circuit & to reduce branching - this is a hot path and targetCapacity should rarely overflow
     if (targetCapacity >= 0 & targetCapacity <= capacity()) {
@@ -266,7 +298,7 @@ ByteBuffer& ByteBuffer::capacity(int newCapacity) {
     std::memcpy(newArray, oldArray, bytesToCopy);
     this->memory = newArray;
     freeArray(oldArray);
-    return this;
+    return *this;
 }
 ByteBuffer& ByteBuffer::clear() {
     _readerIndex = _writerIndex = 0;
@@ -284,8 +316,8 @@ int ByteBuffer::ensureWritable(int minWritableBytes, bool force) {
         return 0;
     }
 
-    const int maxCapacity = maxCapacity();
-    const int writerIndex = writerIndex();
+    const int maxCapacity = this->capacity();
+    const int writerIndex = this->writerIndex();
     if (minWritableBytes > maxCapacity - writerIndex) {
         if (!force || capacity() == maxCapacity) {
             return 1;
@@ -304,8 +336,10 @@ int ByteBuffer::ensureWritable(int minWritableBytes, bool force) {
     return 2;
 }
 int ByteBuffer::indexOf(int fromIndex, int toIndex, char value) {
-    // TODO
-    throw std::logic_error("ByteBuffer::indexOf(int fromIndex, int toIndex, char value)");
+    if (fromIndex <= toIndex) {
+        return firstIndexOf(this, fromIndex, toIndex, value);
+    }
+    return lastIndexOf(this, fromIndex, toIndex, value);
 }
 bool ByteBuffer::isReadable(int numBytes) {
     return _writerIndex - _readerIndex >= numBytes;
@@ -534,6 +568,22 @@ short ByteBuffer::readShort() {
     _readerIndex += 2;
     return v;
 }
+std::string ByteBuffer::readString() {
+    checkReadableBytes0(2);
+    short length = CodecUtils::getShort(memory, _readerIndex);
+    checkReadableBytes0(2 + length);
+    std::string v = CodecUtils::getString(memory, _readerIndex);
+    _readerIndex += 2+length;
+    return v;
+}
+std::wstring ByteBuffer::readWstring() {
+    checkReadableBytes0(2);
+    short length = CodecUtils::getShort(memory, _readerIndex);
+    checkReadableBytes0(2 + length);
+    std::wstring v = CodecUtils::getWString(memory, _readerIndex);
+    _readerIndex += 2+length;
+    return v;
+}
 
 // --- set data methods --- //
 ByteBuffer& ByteBuffer::setBool(int index, bool value) {
@@ -751,7 +801,7 @@ ByteBuffer& ByteBuffer::writeZero(int length) {
     int wIndex = _writerIndex;
     checkIndex0(wIndex, length);
 
-    int nLong = length >>> 3;
+    int nLong = ((unsigned int)length) >> 3;
     int nBytes = length & 7;
     for (int i = nLong; i > 0; i --) {
         CodecUtils::setLong(memory, wIndex, 0);
@@ -777,3 +827,78 @@ ByteBuffer& ByteBuffer::writeZero(int length) {
     return *this;
 }
 
+// --- operator<< --- //
+ByteBuffer& ByteBuffer::operator<<(bool value) {
+    return this->writeBool(value);
+}
+ByteBuffer& ByteBuffer::operator<<(char value) {
+    return this->writeByte(value);
+}
+ByteBuffer& ByteBuffer::operator<<(short value) {
+    return this->writeShort(value);
+}
+ByteBuffer& ByteBuffer::operator<<(wchar_t value) {
+    return this->writeWChar(value);
+}
+ByteBuffer& ByteBuffer::operator<<(int value) {
+    return this->writeInt(value);
+}
+ByteBuffer& ByteBuffer::operator<<(long value) {
+    return this->writeLong(value);
+}
+ByteBuffer& ByteBuffer::operator<<(float value) {
+    return this->writeFloat(value);
+}
+ByteBuffer& ByteBuffer::operator<<(double value) {
+    return this->writeDouble(value);
+}
+ByteBuffer& ByteBuffer::operator<<(std::string value) {
+    this->writeString(value);
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator<<(std::wstring value) {
+    this->writeWString(value);
+    return *this;
+}
+
+// --- operator>> --- //
+ByteBuffer& ByteBuffer::operator>>(bool& value) {
+    value = this->readBool();
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator>>(char& value) {
+    value = this->readByte();
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator>>(short& value) {
+    value = this->readShort();
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator>>(wchar_t& value) {
+    value = this->readWChar();
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator>>(int& value) {
+    value = this->readInt();
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator>>(long& value) {
+    value = this->readLong();
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator>>(float& value) {
+    value = this->readFloat();
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator>>(double& value) {
+    value = this->readDouble();
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator>>(std::string& value) {
+    value = this->readString();
+    return *this;
+}
+ByteBuffer& ByteBuffer::operator>>(std::wstring& value) {
+    value = this->readWstring();
+    return *this;
+}

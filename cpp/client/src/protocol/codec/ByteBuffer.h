@@ -78,6 +78,8 @@ public:
     int readMedium();
     int readUnsignedMedium();
     short readShort();
+    std::string readString();
+    std::wstring readWstring();
 
     // --- set data methods --- //
     ByteBuffer& setBool(int index, bool value);
@@ -117,6 +119,30 @@ public:
     ByteBuffer& writeShort(int value);
     ByteBuffer& writeZero(int length);
 
+    // --- operator<< --- //
+    ByteBuffer& operator<<(bool value);
+    ByteBuffer& operator<<(char value);
+    ByteBuffer& operator<<(short value);
+    ByteBuffer& operator<<(wchar_t value);
+    ByteBuffer& operator<<(int value);
+    ByteBuffer& operator<<(long value);
+    ByteBuffer& operator<<(float __f);
+    ByteBuffer& operator<<(double __f);
+    ByteBuffer& operator<<(std::string __s);
+    ByteBuffer& operator<<(std::wstring __s);
+
+    // --- operator>> --- //
+    ByteBuffer& operator>>(bool& value);
+    ByteBuffer& operator>>(char& value);
+    ByteBuffer& operator>>(short& value);
+    ByteBuffer& operator>>(wchar_t& value);
+    ByteBuffer& operator>>(int& value);
+    ByteBuffer& operator>>(long& value);
+    ByteBuffer& operator>>(float& value);
+    ByteBuffer& operator>>(double& value);
+    ByteBuffer& operator>>(std::string& value);
+    ByteBuffer& operator>>(std::wstring& value);
+
 protected:
     static bool checkAccessible;
     void ensureAccessible();
@@ -143,7 +169,8 @@ private:
     static void checkIndexBounds(const int readerIndex, const int writerIndex, const int capacity);
     static void checkRangeBounds(const char *indexName, const int index, const int fieldLength, const int capacity);
     static void checkReadableBounds(ByteBuffer& src, const int length);
-
+    friend  int lastIndexOf(ByteBuffer* buffer, int fromIndex, int toIndex, char value);
+    friend int firstIndexOf(ByteBuffer* buffer, int fromIndex, int toIndex, char value);
 };
 
 
