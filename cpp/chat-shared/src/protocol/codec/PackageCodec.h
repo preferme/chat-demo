@@ -18,8 +18,8 @@ using namespace chat::protocol::codec;
 class PackageCodec {
 public:
 
-    int encode(std::unique_ptr<Package>& package, std::ostream& os) throw(CodecException);
-    int decode(std::istream& is, std::unique_ptr<Package>& package) throw(CodecException);
+    int encode(std::unique_ptr<Package>& package, std::ostream& os) throw();
+    int decode(std::istream& is, std::unique_ptr<Package>& package) throw();
 
 };
 

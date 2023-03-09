@@ -2,13 +2,19 @@
 // Created by NAVER on 2023/3/9.
 //
 
-#include "Poller.h"
+#include "net/poll/Poller.h"
 #include <poll.h>
 #include <errno.h>
 #include <string.h>
 #include <iostream>
 
 extern int errno;
+
+
+namespace chat {
+namespace net {
+namespace poll {
+
 
 Poller::Poller()
         : pollerThread(nullptr), runnable(false), errorHandler(nullptr) {
@@ -30,7 +36,7 @@ void Poller::join() {
     pollerThread->join();
 }
 
-void Poller::regestEventsHandler(int fd, int events, PollEventsHandler handler) {
+void Poller::registEventsHandler(int fd, int events, PollEventsHandler handler) {
     mutex.lock();
     if (this->eventsDispatchers.find(fd) == this->eventsDispatchers.end()) {
         this->eventsDispatchers[fd] = std::make_shared<PollerEventsHandler>(fd);
@@ -39,7 +45,7 @@ void Poller::regestEventsHandler(int fd, int events, PollEventsHandler handler) 
     dispatcher->registEventsHandler(events, handler);
     mutex.unlock();
 }
-void Poller::setErrorHandler(ErrorHandler* errorHandler) {
+void Poller::registErrorHandler(ErrorHandler errorHandler) {
     this->errorHandler = errorHandler;
 }
 
@@ -58,7 +64,7 @@ bool Poller::getRunnable() {
 }
 void Poller::onPollError(const int errorno) {
     if (this->errorHandler) {
-        this->errorHandler->doHandler(errorno);
+        this->errorHandler(errorno);
     } else {
         // EAGAIN 内部数据结构的分配失败，但后续请求可能会成功。
         // EINTR 在轮询()期间捕获到信号。
@@ -102,7 +108,7 @@ void Poller::executeCyclePoll(Poller* self) noexcept {
             index++;
         }
         self->mutex.unlock();
-        int result = poll(fds, nfds, timeout);
+        int result = ::poll(fds, nfds, timeout);
         // 值 0 表示 调用超时并且没有选择文件描述符
         if (result == 0) {
             continue;;
@@ -119,3 +125,8 @@ void Poller::executeCyclePoll(Poller* self) noexcept {
         }
     }
 }
+
+
+} /* namespace poll */
+} /* namespace net */
+} /* namespace chat */

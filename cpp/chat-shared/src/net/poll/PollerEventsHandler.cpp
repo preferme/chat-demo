@@ -2,8 +2,13 @@
 // Created by NAVER on 2023/3/9.
 //
 
-#include "PollerEventsHandler.h"
+#include "net/poll/PollerEventsHandler.h"
 #include <poll.h>
+
+namespace chat {
+namespace net {
+namespace poll {
+
 
 PollerEventsHandler::PollerEventsHandler(const int fd)
         : fd(fd), events(0),
@@ -115,3 +120,8 @@ void PollerEventsHandler::executeEventsHandler(const int fd, const short events,
 short PollerEventsHandler::getEvents() {
     return this->events;
 }
+
+
+} /* namespace poll */
+} /* namespace net */
+} /* namespace chat */

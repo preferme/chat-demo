@@ -5,10 +5,17 @@
 #ifndef CPP_POLLEREVENTSHANDLER_H
 #define CPP_POLLEREVENTSHANDLER_H
 
-#include "PollEventHandler.h"
+#include <functional>
+
+namespace chat {
+namespace net {
+namespace poll {
+
 
 class PollerEventsHandler {
 public:
+    typedef std::function<void(const int, const short, const short)> PollEventsHandler;
+
     PollerEventsHandler(const int fd);
     void registEventsHandler(const short events, const PollEventsHandler eventsHandler);
     void executeEventsHandler(const int fd, const short events, const short revents);
@@ -56,5 +63,9 @@ private:
     PollEventsHandler onPollNval;
 };
 
+
+} /* namespace poll */
+} /* namespace net */
+} /* namespace chat */
 
 #endif //CPP_POLLEREVENTSHANDLER_H

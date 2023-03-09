@@ -21,20 +21,15 @@ void onInterrupt(int value) {
 }
 
 // -----------------------
-#include "Poller.h"
-#include "ErrorHandler.h"
+#include "net/poll/Poller.h"
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <poll.h>
 #include <string.h>
 
-class PollerErrorHandler : public ErrorHandler {
-public:
-    void doHandler(const int error) override {
-        cout << "ON PollerErrorHandler " << endl;
-    }
-};
+using namespace chat::net::poll;
+
 
 int main() {
     // 为优雅关闭做准备
@@ -63,9 +58,11 @@ int main() {
     }
     Poller poller;
 
-    PollerErrorHandler errorHandler;
-    poller.setErrorHandler(&errorHandler);
-    poller.regestEventsHandler(socketfd, POLLIN, [](const int fd, const short events, const short revents) {
+//    PollerErrorHandler errorHandler;
+    poller.registErrorHandler([](const int error){
+        cout << "ON PollerErrorHandler " << endl;
+    });
+    poller.registEventsHandler(socketfd, POLLIN, [](const int fd, const short events, const short revents) {
         cout << "ON POLLIN event" << endl;
     });
 
