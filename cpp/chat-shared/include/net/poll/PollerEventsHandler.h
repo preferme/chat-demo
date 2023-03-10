@@ -51,6 +51,9 @@ protected:
     PollEventsHandler onPollNval;
 };
 
+
+#if defined(POLLEXTEND)
+
 class ExtendPollerEventsHandler : public BasePollerEventsHandler {
 public:
     ExtendPollerEventsHandler(int fd);
@@ -72,7 +75,6 @@ private:
     PollEventsHandler onPollWrite;
 };
 
-#if defined(POLLEXTEND)
 typedef ExtendPollerEventsHandler PollerEventsHandler;
 #else
 typedef BasePollerEventsHandler PollerEventsHandler;

@@ -91,6 +91,8 @@ short BasePollerEventsHandler::getEvents() {
 }
 
 
+#if defined(POLLEXTEND)
+
 ExtendPollerEventsHandler::ExtendPollerEventsHandler(int fd)
         :BasePollerEventsHandler(fd) {
 
@@ -128,6 +130,8 @@ void ExtendPollerEventsHandler::executeEventsHandler(const int fd, const short e
         this->onPollWrite(fd, events, revents);
     }
 }
+
+#endif
 
 
 } /* namespace poll */

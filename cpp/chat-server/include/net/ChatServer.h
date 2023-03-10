@@ -23,8 +23,8 @@ public:
     ChatServer(const std::string host, const int port);
     ~ChatServer();
 
-    void bind() throw(CErrorException);
-    void listen(int backlog = 100) throw(CErrorException);
+    void bind();
+    void listen(int backlog = 100);
     void startup();
     void shutdown();
 

@@ -30,7 +30,7 @@ ChatServer::~ChatServer() {
     this->shutdown();
 }
 
-void ChatServer::bind() throw(CErrorException) {
+void ChatServer::bind() {
     // 创建 tcp socket 套接字
     if (this->serverSocketFd <= 0) {
         this->serverSocketFd = ::socket(AF_INET, SOCK_STREAM, 0);
@@ -55,7 +55,7 @@ void ChatServer::bind() throw(CErrorException) {
     std::cout << "[ChatServer][bind] bind address : " << inet_ntoa(server_addr.sin_addr) << ":" << server_addr.sin_port << std::endl;
 }
 
-void ChatServer::listen(int backlog) throw(CErrorException) {
+void ChatServer::listen(int backlog) {
     if (::listen(this->serverSocketFd, backlog) == -1) {
         THROW_EXCEPTION(CErrorException);
     }
