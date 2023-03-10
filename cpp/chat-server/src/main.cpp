@@ -32,14 +32,18 @@ void onInterrupt(int value) {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
 
     // 为优雅关闭做准备
     ::signal(SIGINT,  onInterrupt);
     ::signal(SIGQUIT, onInterrupt);
 
     const char* ip = "127.0.0.1";
-    const int port = 65432;
+    int port = 65432;
+
+    if (argc == 2) {
+        port = ::atoi(argv[1]);
+    }
 
     ChatServer server(ip, port);
     server.bind();

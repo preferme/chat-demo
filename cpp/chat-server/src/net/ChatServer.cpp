@@ -82,7 +82,7 @@ void ChatServer::onConnectionIncome(const int fd, const short events, const shor
                 ::close(fd);
                 return;
             }
-            std::cout << "[income] " << buffer << std::endl;
+            std::cout << "[income] " << buffer ;//<< std::endl;
             ::write(fd, buffer, len);
         }
     });

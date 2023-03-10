@@ -30,40 +30,17 @@ void onInterrupt(int value) {
 using namespace chat::net;
 using namespace chat::exception;
 
-int main() {
+int main(int argc, char* argv[]) {
     // 为优雅关闭做准备
     signal(SIGINT, onInterrupt);
 
-    const char* ip = "127.0.0.1";
-    const int port = 65432;
+    char* ip = "127.0.0.1";
+    int port = 65432;
 
-//    int socketfd = socket(AF_INET,SOCK_STREAM,0);
-//    if(socketfd == -1)
-//    {
-//        perror("socket");
-//        exit(-1);
-//    }
-//    struct sockaddr_in server_addr;
-//    memset(&server_addr,0,sizeof(struct sockaddr_in));
-//    server_addr.sin_family=AF_INET;
-//    server_addr.sin_port=htons(port);
-//    server_addr.sin_addr.s_addr=inet_addr(ip);
-//    //将cfd连接到制定的服务器网络地址server_addr
-//    if(connect(socketfd,(struct sockaddr*)&server_addr,sizeof(struct sockaddr)) == -1)
-//    {
-//        perror("connect");
-//        close(socketfd);
-//        exit(-1);
-//    }
-//    Poller poller;
-//
-////    PollerErrorHandler errorHandler;
-//    poller.registErrorHandler([](const int error){
-//        cout << "ON PollerErrorHandler " << endl;
-//    });
-//    poller.registEventsHandler(socketfd, POLLIN, [](const int fd, const short events, const short revents) {
-//        cout << "ON POLLIN event" << endl;
-//    });
+    if (argc == 3) {
+        ip = argv[1];
+        port = ::atoi(argv[2]);
+    }
 
     ChatClient client(ip, port);
 
