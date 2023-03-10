@@ -19,6 +19,7 @@ public:
     ~ChatClient();
     void connect();
     void handle_conn();
+    void startup();
     void shutdown();
 private:
     std::string remoteIp;

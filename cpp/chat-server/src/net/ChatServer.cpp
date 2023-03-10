@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <cstring>
+#include <fcntl.h>
 
 using namespace chat::exception;
 
@@ -71,6 +72,8 @@ void ChatServer::onConnectionIncome(const int fd, const short events, const shor
         std::cerr << "[ChatServer][onConnectionIncome] accept failed (" << errno << ")" << strerror(events) << std::endl;
         return;
     }
+    int fl = ::fcntl(clientFd, F_GETFL, 0);
+    ::fcntl(clientFd, F_SETFL, fl | O_NONBLOCK);
     clientPoller.registEventsHandler(clientFd, POLLIN, [](const int fd, const short events, const short revents){
         if (revents & POLLIN) {
             char buffer[1024]= {0};

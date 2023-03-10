@@ -93,6 +93,7 @@ void Poller::onPollEvents(int fd, short events, short revents) {
     }
 }
 void Poller::executeCyclePoll(Poller* self) noexcept {
+    std::cout << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] executeCyclePoll." << std::endl;
     while (self->getRunnable()) {
         struct pollfd * fds = nullptr;
         nfds_t nfds = 0;
@@ -109,7 +110,8 @@ void Poller::executeCyclePoll(Poller* self) noexcept {
         }
         self->mutex.unlock();
         if (nfds <= 0) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::cout << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] sleep 1 second." << std::endl;
             continue;
         }
         int result = ::poll(fds, nfds, timeout);

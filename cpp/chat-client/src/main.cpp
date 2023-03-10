@@ -70,6 +70,7 @@ int main() {
     try {
         client.connect();
         client.handle_conn();
+        client.startup();
     } catch (Exception& ex) {
         std::cerr << ex << endl;
     }

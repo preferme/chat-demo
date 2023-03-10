@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <cstring>
+#include <fcntl.h>
 
 using namespace chat::exception;
 
@@ -46,10 +47,14 @@ void ChatClient::connect() {
         THROW_EXCEPTION(CErrorException);
     }
 
-    std::cout << "[ChatClient][connect] remote address :=> " << inet_ntoa(server_addr.sin_addr) << ":" << ntohs(server_addr.sin_port) << std::endl;
+    std::cout << "[ChatClient][connect] connect address :=> " << inet_ntoa(server_addr.sin_addr) << ":" << ntohs(server_addr.sin_port) << std::endl;
 }
 
 void ChatClient::handle_conn() {
+    int fl = ::fcntl(this->clientFd, F_GETFL, 0);
+    ::fcntl(this->clientFd, F_SETFL, fl | O_NONBLOCK);
+    fl = ::fcntl(STDIN_FILENO, F_GETFL, 0);
+    ::fcntl(STDIN_FILENO, F_SETFL, fl | O_NONBLOCK);
     int socketFd = this->clientFd;
     poller.registEventsHandler(STDIN_FILENO, POLLIN, [=](const int fd, const short events, const short revents){
         char buffer[1024] = {0};
@@ -71,6 +76,10 @@ void ChatClient::handle_conn() {
         }
         ::write(STDIN_FILENO, buffer, len);
     });
+}
+
+void ChatClient::startup() {
+    poller.startup();
 }
 
 void ChatClient::shutdown() {
