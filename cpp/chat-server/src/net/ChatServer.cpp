@@ -63,6 +63,7 @@ void ChatServer::listen(int backlog) throw(CErrorException) {
 }
 
 void ChatServer::onConnectionIncome(const int fd, const short events, const short revents) {
+    std::cout << "[ChatServer][onConnectionIncome] income (" << fd << ")" << std::endl;
     struct sockaddr_in client_addr;
     socklen_t clitaddrlen=sizeof(client_addr);
     int clientFd = ::accept(this->serverSocketFd, (struct sockaddr*)&client_addr, &clitaddrlen);

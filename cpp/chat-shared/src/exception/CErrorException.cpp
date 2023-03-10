@@ -23,8 +23,8 @@ std::ostream& operator<<(std::ostream& os, CErrorException& ex) {
     localtime_r(&timer, &stime);
     strftime(fmt, sizeof(fmt), "%Y-%m-%d %H:%M:%S", &stime);
     // %s\t%30s:%-5d[%s] : %s\n
-    os << fmt << std::setw(30) << std::left << ex.getFileName();
-    os << ":" << std::setw(5) << std::right << ex.getLineNumber();
+    os << fmt << "\t" << std::setw(30) << std::right << ex.getFileName();
+    os << ":" << std::setw(5) << std::left << ex.getLineNumber();
     os << "[" << ex.getFunName() << "]";
     os << " ("<< ex.errorno << "): " << ex.getMessage() << std::endl;
     return os;

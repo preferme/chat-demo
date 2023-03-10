@@ -73,8 +73,8 @@ std::ostream& operator<<(std::ostream& os, Exception& ex) {
     localtime_r(&timer, &stime);
     strftime(fmt, sizeof(fmt), "%Y-%m-%d %H:%M:%S", &stime);
     // %s\t%30s:%-5d[%s] : %s\n
-    os << fmt << std::setw(30) << std::left << ex.fileName;
-    os << ":" << std::setw(5) << std::right << ex.lineNumber;
+    os << fmt << "\t" << std::setw(30) << std::right << ex.fileName;
+    os << ":" << std::setw(5) << std::left << ex.lineNumber;
     os << "[" << ex.funName << "]";
     os << " : " << ex.message << std::endl;
     return os;

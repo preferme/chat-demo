@@ -1,5 +1,5 @@
 
-include_directories(../chat-shared/include)
+include_directories(../chat-shared/include include)
 
 file(GLOB_RECURSE SRC src/*.cpp)
 file(GLOB_RECURSE INC include/*.h)
