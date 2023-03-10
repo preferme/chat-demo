@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     // 为优雅关闭做准备
     signal(SIGINT, onInterrupt);
 
-    char* ip = "127.0.0.1";
+    const char* ip = "127.0.0.1";
     int port = 65432;
 
     if (argc == 3) {
