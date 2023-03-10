@@ -5,6 +5,7 @@
 #ifndef CPP_POLLEREVENTSHANDLER_H
 #define CPP_POLLEREVENTSHANDLER_H
 
+#include <poll.h>
 #include <functional>
 
 namespace chat {
@@ -12,15 +13,16 @@ namespace net {
 namespace poll {
 
 
-class PollerEventsHandler {
+class BasePollerEventsHandler {
 public:
     typedef std::function<void(const int, const short, const short)> PollEventsHandler;
 
-    PollerEventsHandler(const int fd);
-    void registEventsHandler(const short events, const PollEventsHandler eventsHandler);
-    void executeEventsHandler(const int fd, const short events, const short revents);
+    BasePollerEventsHandler(const int fd);
+    virtual void registEventsHandler(const short events, const PollEventsHandler eventsHandler);
+    virtual void executeEventsHandler(const int fd, const short events, const short revents);
     short getEvents();
-private:
+
+protected:
     int fd;
     short events;
 //    #define POLLIN          0x0001          /* any readable data available */
@@ -37,20 +39,6 @@ private:
     PollEventsHandler onPollWrnorm;
     PollEventsHandler onPollRdband;
     PollEventsHandler onPollWrban;
-#if defined(POLLEXTEND)
-    /*
-     * FreeBSD extensions: polling on a regular file might return one
-     * of these events (currently only supported on local filesystems).
-     */
-//    #define POLLEXTEND      0x0200          /* file may have been extended */
-//    #define POLLATTRIB      0x0400          /* file attributes may have changed */
-//    #define POLLNLINK       0x0800          /* (un)link/rename may have happened */
-//    #define POLLWRITE       0x1000          /* file's contents may have changed */
-    PollEventsHandler onPollExtend;
-    PollEventsHandler onPollAttrib;
-    PollEventsHandler onPollNlink;
-    PollEventsHandler onPollWrite;
-#endif
     /*
      * These events are set if they occur regardless of whether they were
      * requested.
@@ -63,6 +51,32 @@ private:
     PollEventsHandler onPollNval;
 };
 
+class ExtendPollerEventsHandler : public BasePollerEventsHandler {
+public:
+    ExtendPollerEventsHandler(int fd);
+    void registEventsHandler(const short events, const PollEventsHandler eventsHandler) override;
+    void executeEventsHandler(const int fd, const short events, const short revents) override;
+
+private:
+    /*
+     * FreeBSD extensions: polling on a regular file might return one
+     * of these events (currently only supported on local filesystems).
+     */
+//    #define POLLEXTEND      0x0200          /* file may have been extended */
+//    #define POLLATTRIB      0x0400          /* file attributes may have changed */
+//    #define POLLNLINK       0x0800          /* (un)link/rename may have happened */
+//    #define POLLWRITE       0x1000          /* file's contents may have changed */
+    PollEventsHandler onPollExtend;
+    PollEventsHandler onPollAttrib;
+    PollEventsHandler onPollNlink;
+    PollEventsHandler onPollWrite;
+};
+
+#if defined(POLLEXTEND)
+typedef ExtendPollerEventsHandler PollerEventsHandler;
+#else
+typedef BasePollerEventsHandler PollerEventsHandler;
+#endif
 
 } /* namespace poll */
 } /* namespace net */

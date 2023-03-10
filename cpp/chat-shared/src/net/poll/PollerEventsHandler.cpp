@@ -10,18 +10,15 @@ namespace net {
 namespace poll {
 
 
-PollerEventsHandler::PollerEventsHandler(const int fd)
+BasePollerEventsHandler::BasePollerEventsHandler(const int fd)
         : fd(fd), events(0),
           onPollIn(nullptr), onPollPri(nullptr), onPollOut(nullptr), onPollRdnorm(nullptr), onPollWrnorm(nullptr),
           onPollRdband(nullptr), onPollWrban(nullptr),
-#if defined(POLLEXTEND)
-          onPollExtend(nullptr), onPollAttrib(nullptr), onPollNlink(nullptr), onPollWrite(nullptr),
-#endif
           onPollErr(nullptr), onPollHup(nullptr), onPollNval(nullptr) {
 
 }
 
-void PollerEventsHandler::registEventsHandler(const short events, const PollEventsHandler eventsHandler) {
+void BasePollerEventsHandler::registEventsHandler(const short events, const PollEventsHandler eventsHandler) {
     this->events |= events;
 
     if (events & POLLIN) {
@@ -45,20 +42,6 @@ void PollerEventsHandler::registEventsHandler(const short events, const PollEven
     if (events & POLLWRBAND) {
         this->onPollWrban = eventsHandler;
     }
-#if defined(POLLEXTEND)
-    if (events & POLLEXTEND) {
-        this->onPollExtend = eventsHandler;
-    }
-    if (events & POLLATTRIB) {
-        this->onPollAttrib = eventsHandler;
-    }
-    if (events & POLLNLINK) {
-        this->onPollNlink = eventsHandler;
-    }
-    if (events & POLLWRITE) {
-        this->onPollWrite = eventsHandler;
-    }
-#endif
     if (events & POLLERR) {
         this->onPollErr = eventsHandler;
     }
@@ -70,7 +53,7 @@ void PollerEventsHandler::registEventsHandler(const short events, const PollEven
     }
 }
 
-void PollerEventsHandler::executeEventsHandler(const int fd, const short events, const short revents) {
+void BasePollerEventsHandler::executeEventsHandler(const int fd, const short events, const short revents) {
     if (this->onPollIn && (revents & POLLIN)) {
         this->onPollIn(fd, events, revents);
     }
@@ -92,7 +75,46 @@ void PollerEventsHandler::executeEventsHandler(const int fd, const short events,
     if (this->onPollWrban && (revents & POLLWRBAND)) {
         this->onPollWrban(fd, events, revents);
     }
-#if defined(POLLEXTEND)
+    if (this->onPollErr && (revents & POLLERR)) {
+        this->onPollErr(fd, events, revents);
+    }
+    if (this->onPollHup && (revents & POLLHUP)) {
+        this->onPollHup(fd, events, revents);
+    }
+    if (this->onPollNval && (revents & POLLNVAL)) {
+        this->onPollNval(fd, events, revents);
+    }
+}
+
+short BasePollerEventsHandler::getEvents() {
+    return this->events;
+}
+
+
+ExtendPollerEventsHandler::ExtendPollerEventsHandler(int fd)
+        :BasePollerEventsHandler(fd) {
+
+}
+
+void ExtendPollerEventsHandler::registEventsHandler(const short events,
+                                                    const BasePollerEventsHandler::PollEventsHandler eventsHandler) {
+    BasePollerEventsHandler::registEventsHandler(events, eventsHandler);
+    if (events & POLLEXTEND) {
+        this->onPollExtend = eventsHandler;
+    }
+    if (events & POLLATTRIB) {
+        this->onPollAttrib = eventsHandler;
+    }
+    if (events & POLLNLINK) {
+        this->onPollNlink = eventsHandler;
+    }
+    if (events & POLLWRITE) {
+        this->onPollWrite = eventsHandler;
+    }
+}
+
+void ExtendPollerEventsHandler::executeEventsHandler(const int fd, const short events, const short revents) {
+    BasePollerEventsHandler::executeEventsHandler(fd, events, revents);
     if (this->onPollExtend && (revents & POLLEXTEND)) {
         this->onPollExtend(fd, events, revents);
     }
@@ -105,20 +127,6 @@ void PollerEventsHandler::executeEventsHandler(const int fd, const short events,
     if (this->onPollWrite && (revents & POLLWRITE)) {
         this->onPollWrite(fd, events, revents);
     }
-#endif
-    if (this->onPollErr && (revents & POLLERR)) {
-        this->onPollErr(fd, events, revents);
-    }
-    if (this->onPollHup && (revents & POLLHUP)) {
-        this->onPollHup(fd, events, revents);
-    }
-    if (this->onPollNval && (revents & POLLNVAL)) {
-        this->onPollNval(fd, events, revents);
-    }
-}
-
-short PollerEventsHandler::getEvents() {
-    return this->events;
 }
 
 
