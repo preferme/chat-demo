@@ -17,41 +17,40 @@ using namespace std;
 #include "protocol/codec/CodecUtils.h"
 using namespace chat::protocol::codec;
 
-void onInterrupt(int value) {
-    cout << "[onInterrupt] (" << value << ")" << endl;
-}
+
 
 // -----------------------
-#include "net/poll/Poller.h"
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <poll.h>
-#include <string.h>
+#include "net/ChatServer.h"
 
-using namespace chat::net::poll;
+using namespace chat::net;
+
+static bool running = true;
+
+void onInterrupt(int value) {
+    cout << "[onInterrupt] (" << value << ")" << endl;
+    running = false;
+}
 
 
 int main() {
 
     // 为优雅关闭做准备
-    signal(SIGINT, onInterrupt);
+    ::signal(SIGINT,  onInterrupt);
+    ::signal(SIGQUIT, onInterrupt);
 
     const char* ip = "127.0.0.1";
     const int port = 65432;
 
-    int socketfd = socket(AF_INET,SOCK_STREAM,0);
-    if(socketfd == -1)
-    {
-        perror("socket");
-        exit(-1);
-    }
-    struct sockaddr_in server_addr;
-    memset(&server_addr,0,sizeof(struct sockaddr_in));
-    server_addr.sin_family=AF_INET;
-    server_addr.sin_port=htons(port);
-    server_addr.sin_addr.s_addr=inet_addr(ip);
+    ChatServer server(ip, port);
+    server.bind();
+    server.listen();
+    server.startup();
 
+    while(running) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
+    server.shutdown();
 
     cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
     return 0;

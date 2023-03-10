@@ -22,34 +22,34 @@ void BasePollerEventsHandler::registEventsHandler(const short events, const Poll
     this->events |= events;
 
     if (events & POLLIN) {
-        this->onPollIn = eventsHandler;
+        this->onPollIn = std::move(eventsHandler);
     }
     if (events & POLLOUT) {
-        this->onPollOut = eventsHandler;
+        this->onPollOut = std::move(eventsHandler);
     }
     if (events & POLLPRI) {
-        this->onPollPri = eventsHandler;
+        this->onPollPri = std::move(eventsHandler);
     }
     if (events & POLLRDNORM) {
-        this->onPollRdnorm = eventsHandler;
+        this->onPollRdnorm = std::move(eventsHandler);
     }
     if (events & POLLWRNORM) {
-        this->onPollWrnorm = eventsHandler;
+        this->onPollWrnorm = std::move(eventsHandler);
     }
     if (events & POLLRDBAND) {
-        this->onPollRdband = eventsHandler;
+        this->onPollRdband = std::move(eventsHandler);
     }
     if (events & POLLWRBAND) {
-        this->onPollWrban = eventsHandler;
+        this->onPollWrban = std::move(eventsHandler);
     }
     if (events & POLLERR) {
-        this->onPollErr = eventsHandler;
+        this->onPollErr = std::move(eventsHandler);
     }
     if (events & POLLHUP) {
-        this->onPollHup = eventsHandler;
+        this->onPollHup = std::move(eventsHandler);
     }
     if (events & POLLNVAL) {
-        this->onPollNval = eventsHandler;
+        this->onPollNval = std::move(eventsHandler);
     }
 }
 
@@ -100,16 +100,16 @@ void ExtendPollerEventsHandler::registEventsHandler(const short events,
                                                     const BasePollerEventsHandler::PollEventsHandler eventsHandler) {
     BasePollerEventsHandler::registEventsHandler(events, eventsHandler);
     if (events & POLLEXTEND) {
-        this->onPollExtend = eventsHandler;
+        this->onPollExtend = std::move(eventsHandler);
     }
     if (events & POLLATTRIB) {
-        this->onPollAttrib = eventsHandler;
+        this->onPollAttrib = std::move(eventsHandler);
     }
     if (events & POLLNLINK) {
-        this->onPollNlink = eventsHandler;
+        this->onPollNlink = std::move(eventsHandler);
     }
     if (events & POLLWRITE) {
-        this->onPollWrite = eventsHandler;
+        this->onPollWrite = std::move(eventsHandler);
     }
 }
 

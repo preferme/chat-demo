@@ -45,8 +45,8 @@ void Poller::registEventsHandler(int fd, int events, PollEventsHandler handler) 
     dispatcher->registEventsHandler(events, handler);
     mutex.unlock();
 }
-void Poller::registErrorHandler(ErrorHandler errorHandler) {
-    this->errorHandler = errorHandler;
+void Poller::setCErrorHandler(CErrorHandler errorHandler) {
+    this->errorHandler = std::move(errorHandler);
 }
 
 
@@ -108,6 +108,10 @@ void Poller::executeCyclePoll(Poller* self) noexcept {
             index++;
         }
         self->mutex.unlock();
+        if (nfds <= 0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            continue;
+        }
         int result = ::poll(fds, nfds, timeout);
         // 值 0 表示 调用超时并且没有选择文件描述符
         if (result == 0) {

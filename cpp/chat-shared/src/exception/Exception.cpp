@@ -4,11 +4,14 @@
 
 #include "exception/Exception.h"
 #include <string>
+#include <ctime>
+#include <cstdio>
+#include <iomanip>
 
 namespace chat {
 namespace exception {
 
-Exception::Exception(const ::std::string& message)
+Exception::Exception(const ::std::string message)
         :message(message), funName(), fileName(), lineNumber(0) {
 
 }
@@ -62,6 +65,19 @@ Exception& Exception::setLineNumber(int lineNumber) {
 
 int Exception::getLineNumber() {
     return this->lineNumber;
+}
+
+std::ostream& operator<<(std::ostream& os, Exception& ex) {
+    char fmt[32] = { 0 }; tm stime {0};
+    time_t timer = std::time(0);
+    localtime_r(&timer, &stime);
+    strftime(fmt, sizeof(fmt), "%Y-%m-%d %H:%M:%S", &stime);
+    // %s\t%30s:%-5d[%s] : %s\n
+    os << fmt << std::setw(30) << std::left << ex.fileName;
+    os << ":" << std::setw(5) << std::right << ex.lineNumber;
+    os << "[" << ex.funName << "]";
+    os << " : " << ex.message << std::endl;
+    return os;
 }
 
 }

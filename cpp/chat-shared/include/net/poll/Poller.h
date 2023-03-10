@@ -20,8 +20,9 @@ namespace poll {
 
 class Poller final {
 public:
+    // void PollEventsHandler(const int fd, const short events, const short revents)
     typedef std::function<void(const int, const short, const short)> PollEventsHandler;
-    typedef std::function<void(const int)> ErrorHandler;
+    typedef std::function<void(const int)> CErrorHandler;
 
     Poller();
     ~Poller();
@@ -30,7 +31,7 @@ public:
     void join();
 
     void registEventsHandler(int fd, int events, PollEventsHandler handler);
-    void registErrorHandler(ErrorHandler errorHandler);
+    void setCErrorHandler(CErrorHandler errorHandler);
 
 protected:
     void setRunnable(bool runnable);
@@ -43,7 +44,7 @@ private:
     bool runnable;
     std::mutex mutex;
     std::map<int, std::shared_ptr<PollerEventsHandler>> eventsDispatchers;
-    ErrorHandler errorHandler;
+    CErrorHandler errorHandler;
 
 };
 
