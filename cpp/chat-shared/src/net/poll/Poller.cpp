@@ -37,13 +37,20 @@ void Poller::join() {
 }
 
 void Poller::registEventsHandler(int fd, int events, PollEventsHandler handler) {
-    mutex.lock();
+    std::lock_guard<std::mutex> __lg(this->mutex);
     if (this->eventsDispatchers.find(fd) == this->eventsDispatchers.end()) {
         this->eventsDispatchers[fd] = std::make_shared<PollerEventsHandler>(fd);
     }
     std::shared_ptr<PollerEventsHandler> dispatcher = this->eventsDispatchers[fd];
     dispatcher->registEventsHandler(events, handler);
-    mutex.unlock();
+}
+void Poller::unregistEventsHandler(int fd) {
+    std::lock_guard<std::mutex> __lg(this->mutex);
+    this->eventsDispatchers.erase(fd);
+}
+int Poller::getEventsHandlerSize() {
+    std::lock_guard<std::mutex> __lg(this->mutex);
+    return this->eventsDispatchers.size();
 }
 void Poller::setCErrorHandler(CErrorHandler errorHandler) {
     this->errorHandler = std::move(errorHandler);
@@ -51,16 +58,12 @@ void Poller::setCErrorHandler(CErrorHandler errorHandler) {
 
 
 void Poller::setRunnable(bool runnable) {
-    mutex.lock();
+    std::lock_guard<std::mutex> __lg(this->mutex);
     this->runnable = runnable;
-    mutex.unlock();
 }
 bool Poller::getRunnable() {
-    bool value;
-    mutex.lock();
-    value = this->runnable;
-    mutex.unlock();
-    return value;
+    std::lock_guard<std::mutex> __lg(this->mutex);
+    return this->runnable;
 }
 void Poller::onPollError(const int errorno) {
     if (this->errorHandler) {
@@ -86,6 +89,7 @@ void Poller::onPollError(const int errorno) {
     }
 }
 void Poller::onPollEvents(int fd, short events, short revents) {
+    std::cout << "[Poller][onPollEvents] [" << std::this_thread::get_id() << "]  fd(" << fd << "), events(" << events << "), revents(" << revents << ")." << std::endl;
     if (this->eventsDispatchers.find(fd) != this->eventsDispatchers.end()) {
         this->eventsDispatchers[fd]->executeEventsHandler(fd, events, revents);
     } else {
@@ -93,11 +97,11 @@ void Poller::onPollEvents(int fd, short events, short revents) {
     }
 }
 void Poller::executeCyclePoll(Poller* self) noexcept {
-    std::cout << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] executeCyclePoll." << std::endl;
+    std::cout << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] start." << std::endl;
+    struct pollfd * fds = nullptr;
+    nfds_t nfds = 0;
+    int timeout = 100; // 100 ms
     while (self->getRunnable()) {
-        struct pollfd * fds = nullptr;
-        nfds_t nfds = 0;
-        int timeout = 100; // 100 ms
         self->mutex.lock();
         nfds = self->eventsDispatchers.size();
         struct pollfd pollfds[nfds];
@@ -110,13 +114,14 @@ void Poller::executeCyclePoll(Poller* self) noexcept {
         }
         self->mutex.unlock();
         if (nfds <= 0) {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            std::cout << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] sleep 1 second." << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+//            std::cout << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] sleep 1 second." << std::endl;
             continue;
         }
         int result = ::poll(fds, nfds, timeout);
         // 值 0 表示 调用超时并且没有选择文件描述符
         if (result == 0) {
+//            std::cout << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] poll nothing." << std::endl;
             continue;;
         }
         // 失败时，poll () 返回 -1 并设置 errno以指示错误。
@@ -126,10 +131,13 @@ void Poller::executeCyclePoll(Poller* self) noexcept {
         // 正值表示已选择的文件描述符总数（即，revents成员非零的文件描述符）
         if (result > 0) {
             for (int index = 0; index < nfds; ++index) {
-                self->onPollEvents(fds[index].fd, fds[index].events, fds[index].revents);
+                if (fds[index].revents) {
+                    self->onPollEvents(fds[index].fd, fds[index].events, fds[index].revents);
+                }
             }
         }
     }
+    std::cout << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] exit." << std::endl;
 }
 
 

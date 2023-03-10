@@ -10,15 +10,19 @@ namespace net {
 namespace poll {
 
 
-BasePollerEventsHandler::BasePollerEventsHandler(const int fd)
-        : fd(fd), events(0),
-          onPollIn(nullptr), onPollPri(nullptr), onPollOut(nullptr), onPollRdnorm(nullptr), onPollWrnorm(nullptr),
-          onPollRdband(nullptr), onPollWrban(nullptr),
-          onPollErr(nullptr), onPollHup(nullptr), onPollNval(nullptr) {
+PollerEventsHandler::PollerEventsHandler(const int fd) : fd(fd), events(0)
+            , onPollIn(nullptr), onPollPri(nullptr), onPollOut(nullptr), onPollErr(nullptr), onPollHup(nullptr), onPollNval(nullptr)
+#if POLLRDNORM != POLLIN
+            , onPollPri(nullptr), onPollRdnorm(nullptr), onPollWrnorm(nullptr), onPollRdband(nullptr), onPollWrban(nullptr)
+#endif
+#if defined(POLLEXTEND)
+            , onPollExtend(nullptr), onPollAttrib(nullptr), onPollNlink(nullptr), onPollWrite(nullptr)
+#endif
+{
 
 }
 
-void BasePollerEventsHandler::registEventsHandler(const short events, const PollEventsHandler eventsHandler) {
+void PollerEventsHandler::registEventsHandler(const short events, const PollEventsHandler eventsHandler) {
     this->events |= events;
 
     if (events & POLLIN) {
@@ -27,6 +31,16 @@ void BasePollerEventsHandler::registEventsHandler(const short events, const Poll
     if (events & POLLOUT) {
         this->onPollOut = std::move(eventsHandler);
     }
+    if (events & POLLERR) {
+        this->onPollErr = std::move(eventsHandler);
+    }
+    if (events & POLLHUP) {
+        this->onPollHup = std::move(eventsHandler);
+    }
+    if (events & POLLNVAL) {
+        this->onPollNval = std::move(eventsHandler);
+    }
+#if POLLRDNORM != POLLIN
     if (events & POLLPRI) {
         this->onPollPri = std::move(eventsHandler);
     }
@@ -42,65 +56,8 @@ void BasePollerEventsHandler::registEventsHandler(const short events, const Poll
     if (events & POLLWRBAND) {
         this->onPollWrban = std::move(eventsHandler);
     }
-    if (events & POLLERR) {
-        this->onPollErr = std::move(eventsHandler);
-    }
-    if (events & POLLHUP) {
-        this->onPollHup = std::move(eventsHandler);
-    }
-    if (events & POLLNVAL) {
-        this->onPollNval = std::move(eventsHandler);
-    }
-}
-
-void BasePollerEventsHandler::executeEventsHandler(const int fd, const short events, const short revents) {
-    if (this->onPollIn && (revents & POLLIN)) {
-        this->onPollIn(fd, events, revents);
-    }
-    if (this->onPollOut && (revents & POLLOUT)) {
-        this->onPollOut(fd, events, revents);
-    }
-    if (this->onPollPri && (revents & POLLPRI)) {
-        this->onPollPri(fd, events, revents);
-    }
-    if (this->onPollRdnorm && (revents & POLLRDNORM)) {
-        this->onPollRdnorm(fd, events, revents);
-    }
-    if (this->onPollWrnorm && (revents & POLLWRNORM)) {
-        this->onPollWrnorm(fd, events, revents);
-    }
-    if (this->onPollRdband && (revents & POLLRDBAND)) {
-        this->onPollRdband(fd, events, revents);
-    }
-    if (this->onPollWrban && (revents & POLLWRBAND)) {
-        this->onPollWrban(fd, events, revents);
-    }
-    if (this->onPollErr && (revents & POLLERR)) {
-        this->onPollErr(fd, events, revents);
-    }
-    if (this->onPollHup && (revents & POLLHUP)) {
-        this->onPollHup(fd, events, revents);
-    }
-    if (this->onPollNval && (revents & POLLNVAL)) {
-        this->onPollNval(fd, events, revents);
-    }
-}
-
-short BasePollerEventsHandler::getEvents() {
-    return this->events;
-}
-
-
+#endif
 #if defined(POLLEXTEND)
-
-ExtendPollerEventsHandler::ExtendPollerEventsHandler(int fd)
-        :BasePollerEventsHandler(fd) {
-
-}
-
-void ExtendPollerEventsHandler::registEventsHandler(const short events,
-                                                    const BasePollerEventsHandler::PollEventsHandler eventsHandler) {
-    BasePollerEventsHandler::registEventsHandler(events, eventsHandler);
     if (events & POLLEXTEND) {
         this->onPollExtend = std::move(eventsHandler);
     }
@@ -113,25 +70,62 @@ void ExtendPollerEventsHandler::registEventsHandler(const short events,
     if (events & POLLWRITE) {
         this->onPollWrite = std::move(eventsHandler);
     }
+#endif
 }
 
-void ExtendPollerEventsHandler::executeEventsHandler(const int fd, const short events, const short revents) {
-    BasePollerEventsHandler::executeEventsHandler(fd, events, revents);
-    if (this->onPollExtend && (revents & POLLEXTEND)) {
+void PollerEventsHandler::executeEventsHandler(const int fd, const short events, const short revents) {
+    if (this->onPollIn.operator bool() && (revents & POLLIN)) {
+        this->onPollIn(fd, events, revents);
+    }
+    if (this->onPollOut.operator bool() && (revents & POLLOUT)) {
+        this->onPollOut(fd, events, revents);
+    }
+    if (this->onPollPri.operator bool() && (revents & POLLPRI)) {
+        this->onPollPri(fd, events, revents);
+    }
+    if (this->onPollErr.operator bool() && (revents & POLLERR)) {
+        this->onPollErr(fd, events, revents);
+    }
+    if (this->onPollHup.operator bool() && (revents & POLLHUP)) {
+        this->onPollHup(fd, events, revents);
+    }
+    if (this->onPollNval.operator bool() && (revents & POLLNVAL)) {
+        this->onPollNval(fd, events, revents);
+    }
+#if POLLRDNORM != POLLIN
+    if (this->onPollRdnorm.operator bool() && (revents & POLLRDNORM)) {
+        this->onPollRdnorm(fd, events, revents);
+    }
+    if (this->onPollWrnorm.operator bool() && (revents & POLLWRNORM)) {
+        this->onPollWrnorm(fd, events, revents);
+    }
+    if (this->onPollRdband.operator bool() && (revents & POLLRDBAND)) {
+        this->onPollRdband(fd, events, revents);
+    }
+    if (this->onPollWrban.operator bool() && (revents & POLLWRBAND)) {
+        this->onPollWrban(fd, events, revents);
+    }
+#endif
+#if defined(POLLEXTEND)
+    if (this->onPollExtend.operator bool() && (revents & POLLEXTEND)) {
         this->onPollExtend(fd, events, revents);
     }
-    if (this->onPollAttrib && (revents & POLLATTRIB)) {
+    if (this->onPollAttrib.operator bool() && (revents & POLLATTRIB)) {
         this->onPollAttrib(fd, events, revents);
     }
-    if (this->onPollNlink && (revents & POLLNLINK)) {
+    if (this->onPollNlink.operator bool() && (revents & POLLNLINK)) {
         this->onPollNlink(fd, events, revents);
     }
-    if (this->onPollWrite && (revents & POLLWRITE)) {
+    if (this->onPollWrite.operator bool() && (revents & POLLWRITE)) {
         this->onPollWrite(fd, events, revents);
     }
+#endif
 }
 
-#endif
+short PollerEventsHandler::getEvents() {
+    return this->events;
+}
+
 
 
 } /* namespace poll */

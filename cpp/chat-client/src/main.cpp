@@ -33,6 +33,8 @@ using namespace chat::exception;
 int main(int argc, char* argv[]) {
     // 为优雅关闭做准备
     signal(SIGINT, onInterrupt);
+    signal(SIGQUIT, onInterrupt);
+    signal(SIGTSTP, onInterrupt);
 
     const char* ip = "127.0.0.1";
     int port = 65432;

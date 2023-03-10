@@ -20,9 +20,11 @@ namespace poll {
 
 class Poller final {
 public:
+//    typedef std::function<void(const int, const short, const short)> PollEventsHandler;
+//    typedef std::function<void(const int)> CErrorHandler;
     // void PollEventsHandler(const int fd, const short events, const short revents)
-    typedef std::function<void(const int, const short, const short)> PollEventsHandler;
-    typedef std::function<void(const int)> CErrorHandler;
+    using PollEventsHandler = std::function<void(const int, const short, const short)>;
+    using CErrorHandler = std::function<void(const int)>;
 
     Poller();
     ~Poller();
@@ -31,6 +33,8 @@ public:
     void join();
 
     void registEventsHandler(int fd, int events, PollEventsHandler handler);
+    void unregistEventsHandler(int fd);
+    int getEventsHandlerSize();
     void setCErrorHandler(CErrorHandler errorHandler);
 
 protected:

@@ -13,11 +13,11 @@ namespace net {
 namespace poll {
 
 
-class BasePollerEventsHandler {
+class PollerEventsHandler {
 public:
     typedef std::function<void(const int, const short, const short)> PollEventsHandler;
 
-    BasePollerEventsHandler(const int fd);
+    PollerEventsHandler(const int fd);
     virtual void registEventsHandler(const short events, const PollEventsHandler eventsHandler);
     virtual void executeEventsHandler(const int fd, const short events, const short revents);
     short getEvents();
@@ -28,17 +28,9 @@ protected:
 //    #define POLLIN          0x0001          /* any readable data available */
 //    #define POLLPRI         0x0002          /* OOB/Urgent readable data */
 //    #define POLLOUT         0x0004          /* file descriptor is writeable */
-//    #define POLLRDNORM      0x0040          /* non-OOB/URG data available */
-//    #define POLLWRNORM      POLLOUT         /* no write type differentiation */
-//    #define POLLRDBAND      0x0080          /* OOB/Urgent readable data */
-//    #define POLLWRBAND      0x0100          /* OOB/Urgent data can be written */
     PollEventsHandler onPollIn;
     PollEventsHandler onPollPri;
     PollEventsHandler onPollOut;
-    PollEventsHandler onPollRdnorm;
-    PollEventsHandler onPollWrnorm;
-    PollEventsHandler onPollRdband;
-    PollEventsHandler onPollWrban;
     /*
      * These events are set if they occur regardless of whether they were
      * requested.
@@ -49,18 +41,17 @@ protected:
     PollEventsHandler onPollErr;
     PollEventsHandler onPollHup;
     PollEventsHandler onPollNval;
-};
-
-
+#if POLLRDNORM != POLLIN
+//    #define POLLRDNORM      0x0040          /* non-OOB/URG data available */
+//    #define POLLWRNORM      POLLOUT         /* no write type differentiation */
+//    #define POLLRDBAND      0x0080          /* OOB/Urgent readable data */
+//    #define POLLWRBAND      0x0100          /* OOB/Urgent data can be written */
+    PollEventsHandler onPollRdnorm;
+    PollEventsHandler onPollWrnorm;
+    PollEventsHandler onPollRdband;
+    PollEventsHandler onPollWrban;
+#endif
 #if defined(POLLEXTEND)
-
-class ExtendPollerEventsHandler : public BasePollerEventsHandler {
-public:
-    ExtendPollerEventsHandler(int fd);
-    void registEventsHandler(const short events, const PollEventsHandler eventsHandler) override;
-    void executeEventsHandler(const int fd, const short events, const short revents) override;
-
-private:
     /*
      * FreeBSD extensions: polling on a regular file might return one
      * of these events (currently only supported on local filesystems).
@@ -73,12 +64,10 @@ private:
     PollEventsHandler onPollAttrib;
     PollEventsHandler onPollNlink;
     PollEventsHandler onPollWrite;
+#endif
 };
 
-typedef ExtendPollerEventsHandler PollerEventsHandler;
-#else
-typedef BasePollerEventsHandler PollerEventsHandler;
-#endif
+
 
 } /* namespace poll */
 } /* namespace net */
