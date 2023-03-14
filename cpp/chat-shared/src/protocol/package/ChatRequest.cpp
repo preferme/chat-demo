@@ -1,6 +1,9 @@
-//
-// Created by NAVER on 2023/3/8.
-//
+/*
+ * ChatRequest.cpp
+ *
+ *  Created on: 2023年3月8日
+ *      Author: hou-lei
+ */
 
 #include "protocol/package/ChatRequest.h"
 

@@ -1,6 +1,9 @@
-//
-// Created by NAVER on 2023/3/6.
-//
+/*
+ * ByteBuffer.h
+ *
+ *  Created on: 2023年3月6日
+ *      Author: hou-lei
+ */
 
 #ifndef __PROTOCOL_CODEC_BYTEBUFFER_H_
 #define __PROTOCOL_CODEC_BYTEBUFFER_H_

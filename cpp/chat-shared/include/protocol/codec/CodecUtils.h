@@ -1,6 +1,9 @@
-//
-// Created by NAVER on 2023/3/7.
-//
+/*
+ * CodecUtils.h
+ *
+ *  Created on: 2023年3月7日
+ *      Author: hou-lei
+ */
 
 #ifndef CPP_CODECUTILS_H
 #define CPP_CODECUTILS_H

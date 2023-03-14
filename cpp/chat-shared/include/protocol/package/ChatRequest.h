@@ -1,6 +1,9 @@
-//
-// Created by NAVER on 2023/3/8.
-//
+/*
+ * CodecUtils.h
+ *
+ *  Created on: 2023年3月8日
+ *      Author: hou-lei
+ */
 
 #ifndef CPP_CHATREQUEST_H
 #define CPP_CHATREQUEST_H
