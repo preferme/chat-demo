@@ -1,7 +1,9 @@
-//
-// Created by NAVER on 2023/3/9.
-//
-
+/*
+ * Poller.h
+ *
+ *  Created on: 2023年3月9日
+ *      Author: hou-lei
+ */
 #ifndef CPP_POLLER_H
 #define CPP_POLLER_H
 

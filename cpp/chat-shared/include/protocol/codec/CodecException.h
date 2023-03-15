@@ -1,7 +1,9 @@
-//
-// Created by NAVER on 2023/3/6.
-//
-
+/*
+ * CodecException.h
+ *
+ *  Created on: 2023年3月6日
+ *      Author: hou-lei
+ */
 #ifndef __PROTOCOL_CODEC_CODECEXCEPTION_H_
 #define __PROTOCOL_CODEC_CODECEXCEPTION_H_
 

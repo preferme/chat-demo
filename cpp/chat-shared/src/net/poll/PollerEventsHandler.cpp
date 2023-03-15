@@ -1,6 +1,9 @@
-//
-// Created by NAVER on 2023/3/9.
-//
+/*
+ * PollerEventsHandler.cpp
+ *
+ *  Created on: 2023年3月9日
+ *      Author: hou-lei
+ */
 
 #include "net/poll/PollerEventsHandler.h"
 #include <poll.h>

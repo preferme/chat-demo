@@ -1,6 +1,9 @@
-//
-// Created by NAVER on 2023/3/10.
-//
+/*
+ * ChatServer.h
+ *
+ *  Created on: 2023年3月10日
+ *      Author: hou-lei
+ */
 
 #ifndef CPP_CHATSERVER_H
 #define CPP_CHATSERVER_H

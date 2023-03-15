@@ -1,6 +1,9 @@
-//
-// Created by NAVER on 2023/3/10.
-//
+/*
+ * ChatClient.h
+ *
+ *  Created on: 2023年3月10日
+ *      Author: hou-lei
+ */
 
 #ifndef CPP_CHATCLIENT_H
 #define CPP_CHATCLIENT_H

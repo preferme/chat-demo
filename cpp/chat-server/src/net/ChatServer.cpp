@@ -1,6 +1,9 @@
-//
-// Created by NAVER on 2023/3/10.
-//
+/*
+ * ChatServer.cpp
+ *
+ *  Created on: 2023年3月10日
+ *      Author: hou-lei
+ */
 
 #include "net/ChatServer.h"
 #include "exception/CErrorException.h"
