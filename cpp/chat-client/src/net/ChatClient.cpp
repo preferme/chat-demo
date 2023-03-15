@@ -15,6 +15,7 @@
 #include <cstring>
 #include <fcntl.h>
 #include <netinet/tcp.h>
+#include <cstdio>
 
 using namespace chat::exception;
 
@@ -62,7 +63,7 @@ void ChatClient::handle_conn() {
     int no_delay = 1;
     setsockopt(this->clientFd, IPPROTO_TCP, TCP_NODELAY, &no_delay, sizeof(int));
     int socketFd = this->clientFd;
-    poller.registEventsHandler(STDIN_FILENO, POLLIN, [&](const int fd, const short events, const short revents){
+    poller.registEventsHandler(STDIN_FILENO, POLLIN, [socketFd](const int fd, const short events, const short revents){
         char buffer[1024] = {0};
         int len = ::read(STDIN_FILENO, buffer, 1024);
         if (len <= 0) {
@@ -70,18 +71,20 @@ void ChatClient::handle_conn() {
             ::shutdown(socketFd, SHUT_WR);
             return;
         }
+        ::printf("[ChatClient][handle_conn] send(%d):(%d) %s", socketFd, len, buffer);
         ::write(socketFd, buffer, len);
     });
-    poller.registEventsHandler(this->clientFd, POLLIN, [&](const int fd, const short events, const short revents){
+    poller.registEventsHandler(this->clientFd, POLLIN, [this](const int fd, const short events, const short revents){
         char buffer[1024] = {0};
         int len = ::read(fd, buffer, 1024);
         if (len <= 0) {
             std::cerr << "[ChatClient][handle_conn] read socket failed("<< len << ")." << std::endl;
-            poller.unregistEventsHandler(fd);
+            this->poller.unregistEventsHandler(fd);
             close(fd);
             return;
         }
-        ::write(STDIN_FILENO, buffer, len);
+        ::printf("[ChatClient][handle_conn] receive(%d):(%d) %s", fd, len, buffer);
+//        ::write(STDOUT_FILENO, buffer, len);
     });
 }
 

@@ -130,12 +130,16 @@ void Poller::executeCyclePoll(Poller* self) noexcept {
         // 失败时，poll () 返回 -1 并设置 errno以指示错误。
         if (result < 0) {
             self->onPollError(errno);
+//            std::cerr << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] poll error." << std::endl;
         }
         // 正值表示已选择的文件描述符总数（即，revents成员非零的文件描述符）
         if (result > 0) {
             for (int index = 0; index < nfds; ++index) {
                 if (fds[index].revents) {
                     self->onPollEvents(fds[index].fd, fds[index].events, fds[index].revents);
+//                } else {
+//                    std::cout << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] fd: " << fds[index].fd;
+//                    std::cout << ", events: " << fds[index].events << ", revents: " << fds[index].revents << std::endl;
                 }
             }
         }

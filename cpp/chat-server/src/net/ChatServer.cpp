@@ -14,6 +14,7 @@
 #include <iostream>
 #include <cstring>
 #include <fcntl.h>
+#include <cstdio>
 
 using namespace chat::exception;
 
@@ -63,7 +64,7 @@ void ChatServer::listen(int backlog) {
         THROW_EXCEPTION(CErrorException);
     }
 //    this->serverPoller.registEventsHandler(this->serverSocketFd, POLLIN, std::bind(&ChatServer::onConnectionIncome, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-    this->serverPoller.registEventsHandler(this->serverSocketFd, POLLIN, [&](const int fd, const short events, const short revents) {
+    this->serverPoller.registEventsHandler(this->serverSocketFd, POLLIN, [this](const int fd, const short events, const short revents) {
         this->onConnectionIncome(fd, events, revents);
     });
     std::cout << "[ChatServer][listen] listen." << std::endl;
@@ -81,16 +82,17 @@ void ChatServer::onConnectionIncome(const int fd, const short events, const shor
     std::cout << "[ChatServer][onConnectionIncome] accept connection (" << clientFd << ")." << std::endl;
     int fl = ::fcntl(clientFd, F_GETFL, 0);
     ::fcntl(clientFd, F_SETFL, fl | O_NONBLOCK);
-    clientPoller.registEventsHandler(clientFd, POLLIN, [&](const int fd, const short events, const short revents){
+    clientPoller.registEventsHandler(clientFd, POLLIN, [this, client_addr](const int fd, const short events, const short revents){
         char buffer[1024]= {0};
         int len = ::read(fd, buffer, 1024);
         if (len <= 0) {
             std::cerr << "[ChatServer][onConnectionIncome] read fd(" << fd << ") failed (" << len << ")." << std::endl;
-            clientPoller.unregistEventsHandler(fd);
+            this->clientPoller.unregistEventsHandler(fd);
             ::close(fd);
             return;
         }
         std::cout << "[income] " << buffer << std::flush;//<< std::endl;
+//        ::printf("[income] %s\n", buffer);
         ::write(fd, buffer, len);
     });
 }
