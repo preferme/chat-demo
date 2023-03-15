@@ -29,6 +29,7 @@ static bool running = true;
 void onInterrupt(int value) {
     cout << "[onInterrupt] (" << value << ")" << endl;
     running = false;
+    exit(0);
 }
 
 
