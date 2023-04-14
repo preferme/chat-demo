@@ -2,7 +2,7 @@
 include_directories(include)
 
 file(GLOB_RECURSE SRC src/*.cpp)
-file(GLOB_RECURSE INC include/*.h)
+file(GLOB_RECURSE INC include/*.h include/*.hpp)
 
 #set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
