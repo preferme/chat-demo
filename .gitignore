@@ -1,3 +1,5 @@
 
 .DS_Store
 cpp/cmake-build-debug
+threadpool-0_2_5-doc
+threadpool-0_2_5-src
