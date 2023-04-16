@@ -7,7 +7,7 @@
 #ifndef __PROTOCOL_CODEC_CODECEXCEPTION_H_
 #define __PROTOCOL_CODEC_CODECEXCEPTION_H_
 
-#include "exception/Exception.h"
+#include "exception/exception.hpp"
 #include <string>
 
 namespace chat {
@@ -15,7 +15,7 @@ namespace protocol {
 namespace codec {
 
 
-class CodecException : public exception::Exception {
+class CodecException : public exception::exception {
 public:
     explicit CodecException(const std::string& message);
     virtual ~CodecException();

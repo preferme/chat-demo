@@ -80,6 +80,29 @@ namespace poll {
             }
         }
 
+        void regist_events_handler(int fd, int events, poll_event_handler handler) {
+            std::lock_guard<std::mutex> __lg(this->m_monitor);
+            if (this->m_events_dispatcher.find(fd) == this->m_events_dispatcher.end()) {
+                this->m_events_dispatcher[fd] = std::make_shared<poll_events_handler>(fd);
+            }
+            std::shared_ptr<poll_events_handler> dispatcher = this->m_events_dispatcher[fd];
+            dispatcher->regist_event_handler(events, handler);
+        }
+
+        void unregist_events_handler(int fd) {
+            std::lock_guard<std::mutex> __lg(this->m_monitor);
+            this->m_events_dispatcher.erase(fd);
+        }
+
+        int get_events_handler_size() {
+            std::lock_guard<std::mutex> __lg(this->m_monitor);
+            return this->m_events_dispatcher.size();
+        }
+
+        void set_cerror_handler(cerror_handler_type error_handler) {
+            this->m_error_handler = std::move(error_handler);
+        }
+
     private:
         void on_poll_error(int error_no) {
             if (m_error_handler != nullptr) {

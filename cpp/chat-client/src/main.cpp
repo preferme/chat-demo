@@ -24,8 +24,10 @@ void onInterrupt(int value) {
 }
 
 // -----------------------
-#include "net/ChatClient.h"
-#include "exception/CErrorException.h"
+//#include "net/ChatClient.h"
+//#include "exception/CErrorException.h"
+#include "net/chat_client.hpp"
+#include "exception/cerror_exception.hpp"
 
 using namespace chat::net;
 using namespace chat::exception;
@@ -44,13 +46,13 @@ int main(int argc, char* argv[]) {
         port = ::atoi(argv[2]);
     }
 
-    ChatClient client(ip, port);
+    chat_client client(ip, port);
 
     try {
         client.connect();
-        client.handle_conn();
+        client.handle_connection();
         client.startup();
-    } catch (Exception& ex) {
+    } catch (chat::exception::exception& ex) {
         std::cerr << ex << endl;
     }
 

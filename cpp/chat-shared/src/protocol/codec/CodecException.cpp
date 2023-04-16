@@ -12,7 +12,7 @@ namespace protocol {
 namespace codec {
 
 CodecException::CodecException(const std::string& message)
-        :Exception(message) {
+        :exception::exception(message) {
 
 }
 
