@@ -24,8 +24,6 @@ void onInterrupt(int value) {
 }
 
 // -----------------------
-//#include "net/ChatClient.h"
-//#include "exception/CErrorException.h"
 #include "net/chat_client.hpp"
 #include "exception/cerror_exception.hpp"
 
