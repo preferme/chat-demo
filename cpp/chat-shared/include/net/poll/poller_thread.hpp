@@ -165,10 +165,11 @@ namespace poll {
                     }
 //                    std::cout << "[poller_thread][execute_poll_cycle] m_events_dispatcher.size = " << nfds << std::endl;
                 }
-                util::scope_guard fds_scope([fds](){
+                util::scope_guard fds_scope([&fds](){
                     if (fds != nullptr) {
 //                        std::cout << "[poller_thread][execute_poll_cycle] release fds" << std::endl;
                         delete [] fds;
+                        fds = nullptr;
                     }
                 });
                 if (nfds <= 0) {

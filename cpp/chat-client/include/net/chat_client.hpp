@@ -44,10 +44,12 @@ namespace net {
         }
 
         void startup() {
+            std::cout << "[chat_client][startup] ." << std::endl;
             m_poller->startup();
         }
 
         void shutdown() {
+            std::cout << "[chat_client][shutdown] ." << std::endl;
             m_poller->shutdown(true);
         }
 

@@ -67,11 +67,6 @@ int main(int argc, char* argv[]) {
     }
 
     client.shutdown();
-    while(running) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-
-    client.shutdown();
 
     cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
     return 0;

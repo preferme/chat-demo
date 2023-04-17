@@ -20,7 +20,7 @@ using namespace chat::protocol::codec;
 
 
 // -----------------------
-#include "net/ChatServer.h"
+#include "net/chat_server.hpp"
 
 using namespace chat::net;
 
@@ -29,16 +29,18 @@ static bool running = true;
 void onInterrupt(int value) {
     cout << "[onInterrupt] (" << value << ")" << endl;
     running = false;
-    exit(0);
+//    exit(0);
 }
 
 
 int main(int argc, char* argv[]) {
 
     // 为优雅关闭做准备
-    ::signal(SIGINT,  onInterrupt);
-    ::signal(SIGQUIT, onInterrupt);
-    ::signal(SIGTSTP, onInterrupt);
+    signal(SIGINT, onInterrupt);    // 2
+    signal(SIGQUIT, onInterrupt);   // 3
+    signal(SIGKILL, onInterrupt);   // 9
+    signal(SIGTERM, onInterrupt);   // 15
+    signal(SIGTSTP, onInterrupt);   // 18
 
     const char* ip = "127.0.0.1";
     int port = 65432;
@@ -47,16 +49,16 @@ int main(int argc, char* argv[]) {
         port = ::atoi(argv[1]);
     }
 
-    ChatServer server(ip, port);
-    server.bind();
-    server.listen();
-    server.startup();
+    std::shared_ptr<chat_server> server = std::make_shared<chat_server>(ip, port);
+    server->bind();
+    server->listen();
+    server->startup();
 
     while(running) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
-    server.shutdown();
+    server->shutdown();
 
     cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
     return 0;
