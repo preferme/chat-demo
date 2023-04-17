@@ -33,10 +33,13 @@ using namespace chat::net;
 using namespace chat::exception;
 
 int main(int argc, char* argv[]) {
+    cout << "[main] signal " << endl;
     // 为优雅关闭做准备
-    signal(SIGINT, onInterrupt);
-    signal(SIGQUIT, onInterrupt);
-    signal(SIGTSTP, onInterrupt);
+    signal(SIGINT, onInterrupt);    // 2
+    signal(SIGQUIT, onInterrupt);   // 3
+    signal(SIGKILL, onInterrupt);   // 9
+    signal(SIGTERM, onInterrupt);   // 15
+    signal(SIGTSTP, onInterrupt);   // 18
 
     const char* ip = "127.0.0.1";
     int port = 65432;
@@ -45,12 +48,15 @@ int main(int argc, char* argv[]) {
         ip = argv[1];
         port = ::atoi(argv[2]);
     }
-
+    cout << "[main] make client " << endl;
     chat_client client(ip, port);
 
     try {
+        cout << "[main] connect " << endl;
         client.connect();
+        cout << "[main] regist handler " << endl;
         client.handle_connection();
+        cout << "[main] start polling " << endl;
         client.startup();
     } catch (chat::exception::exception& ex) {
         std::cerr << ex << endl;

@@ -8,6 +8,7 @@
 #define __CHAT_DEMO_POLLER_THREAD_HPP_
 
 #include "net/poll/poll_events_handler.hpp"
+#include "util/scope_guard.hpp"
 #include <memory>
 #include <functional>
 #include <thread>
@@ -16,6 +17,8 @@
 #include <poll.h>
 #include <errno.h>
 #include <string.h>
+
+//#include <iostream>
 
 extern int errno;
 
@@ -52,6 +55,7 @@ namespace poll {
             std::unique_lock<std::mutex> lock(m_monitor);
             if (m_thread == nullptr) {
                 m_terminate = false;
+                std::cout << "[poller_thread][startup] create thread" << std::endl;
                 m_thread = new std::thread(std::bind(&poller_thread::execute_poll_cycle, this));
             }
         }
@@ -76,6 +80,7 @@ namespace poll {
                 } else {
                     m_thread->detach();
                 }
+                delete m_thread;
                 m_thread = nullptr;
             }
         }
@@ -138,37 +143,50 @@ namespace poll {
         }
 
         void execute_poll_cycle() {
+//            std::cout << "[poller_thread][execute_poll_cycle] begin thread" << std::endl;
             struct pollfd * fds = nullptr;
             nfds_t nfds = 0;
             int timeout = 100; // 100 ms
             while (!m_terminate) {
+//                std::cout << "[poller_thread][execute_poll_cycle] on cycle" << std::endl;
                 {
                     std::unique_lock<std::mutex> lock(m_monitor);
                     nfds = m_events_dispatcher.size();
+//                    std::cout << "[poller_thread][execute_poll_cycle] m_events_dispatcher.size = " << nfds << std::endl;
                     if (nfds > 0) {
-                        struct pollfd pollfds[nfds];
-                        fds = pollfds;
+                        fds = new pollfd[nfds];
                         int index = 0;
                         for (std::map<int,std::shared_ptr<poll_events_handler>>::iterator iter = m_events_dispatcher.begin(); iter != m_events_dispatcher.end(); ++iter) {
-                            pollfds[index].fd = iter->first;
-                            pollfds[index].events = iter->second->get_events();
+//                            std::cout << "[poller_thread][execute_poll_cycle] m_events_dispatcher { fd = " << iter->first << ", events = " << iter->second->get_events() << " }." << std::endl;
+                            fds[index].fd = iter->first;
+                            fds[index].events = iter->second->get_events();
                             index++;
                         }
                     }
+//                    std::cout << "[poller_thread][execute_poll_cycle] m_events_dispatcher.size = " << nfds << std::endl;
                 }
+                util::scope_guard fds_scope([fds](){
+                    if (fds != nullptr) {
+//                        std::cout << "[poller_thread][execute_poll_cycle] release fds" << std::endl;
+                        delete [] fds;
+                    }
+                });
                 if (nfds <= 0) {
+//                    std::cout << "[poller_thread][execute_poll_cycle] no event" << std::endl;
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                     continue;
                 }
+
                 int result = ::poll(fds, nfds, timeout);
                 // 值 0 表示 调用超时并且没有选择文件描述符
                 if (result == 0) {
+//                    std::cout << "[poller_thread][execute_poll_cycle] poll nothing" << std::endl;
                     continue;;
                 }
                 // 失败时，poll () 返回 -1 并设置 errno以指示错误。
                 if (result < 0) {
                     on_poll_error(errno);
-//            std::cerr << "[Poller][executeCyclePoll] [" << std::this_thread::get_id() << "] poll error." << std::endl;
+//                    std::cerr << "[poller_thread][execute_poll_cycle] [" << std::this_thread::get_id() << "] poll error." << std::endl;
                 }
                 // 正值表示已选择的文件描述符总数（即，revents成员非零的文件描述符）
                 if (result > 0) {

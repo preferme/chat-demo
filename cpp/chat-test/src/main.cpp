@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
     signal(SIGINT, onInterrupt);    // 2
     signal(SIGQUIT, onInterrupt);   // 3
     signal(SIGKILL, onInterrupt);   // 9
+    signal(SIGTERM, onInterrupt);   // 15
     signal(SIGTSTP, onInterrupt);   // 18
 
     thread_pool pool(5);
